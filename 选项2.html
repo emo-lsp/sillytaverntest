@@ -13,27 +13,37 @@
         --spacing-m: 14px;
         --spacing-l: 18px;
 
-        --bg-primary: #fafafa;
-        --bg-secondary: #ffffff;
-        --text-primary: #2c2c2c;
-        --text-secondary: #666666;
-        --border-color: #e0e0e0;
-        --shadow-light: rgba(0, 0, 0, 0.08);
-        --shadow-medium: rgba(0, 0, 0, 0.12);
-        --accent-gold: #d4af37;
-        --hover-bg: #f5f5f5;
+        --bg-primary: #f4f7ff;
+        --bg-secondary: rgba(255, 255, 255, 0.7);
+        --text-primary: #0f172a;
+        --text-secondary: #475569;
+        --border-color: rgba(255, 255, 255, 0.4);
+        --shadow-light: rgba(15, 23, 42, 0.12);
+        --shadow-medium: rgba(15, 23, 42, 0.18);
+        --accent-gold: #4f9cff;
+        --hover-bg: rgba(255, 255, 255, 0.75);
+        --glass-bg: rgba(255, 255, 255, 0.45);
+        --glass-bg-strong: rgba(255, 255, 255, 0.7);
+        --glass-border: rgba(255, 255, 255, 0.55);
+        --glass-highlight: rgba(255, 255, 255, 0.85);
+        --glass-header: linear-gradient(135deg, rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0.15));
       }
 
-      [data-theme='dark'] {
-        --bg-primary: #1a1a1a;
-        --bg-secondary: #2d2d2d;
-        --text-primary: #e0e0e0;
-        --text-secondary: #a0a0a0;
-        --border-color: #404040;
-        --shadow-light: rgba(0, 0, 0, 0.3);
-        --shadow-medium: rgba(0, 0, 0, 0.5);
-        --accent-gold: #f1c40f;
-        --hover-bg: #3a3a3a;
+      body[data-theme='dark'] {
+        --bg-primary: #0b1220;
+        --bg-secondary: rgba(15, 23, 42, 0.7);
+        --text-primary: #e2e8f0;
+        --text-secondary: #94a3b8;
+        --border-color: rgba(148, 163, 184, 0.2);
+        --shadow-light: rgba(2, 6, 23, 0.6);
+        --shadow-medium: rgba(2, 6, 23, 0.8);
+        --accent-gold: #7dd3fc;
+        --hover-bg: rgba(30, 41, 59, 0.6);
+        --glass-bg: rgba(15, 23, 42, 0.45);
+        --glass-bg-strong: rgba(15, 23, 42, 0.75);
+        --glass-border: rgba(148, 163, 184, 0.25);
+        --glass-highlight: rgba(255, 255, 255, 0.08);
+        --glass-header: linear-gradient(135deg, rgba(15, 23, 42, 0.8), rgba(15, 23, 42, 0.35));
       }
 
       * {
@@ -61,16 +71,20 @@
 
       .options-container {
         border-radius: var(--corner-radius);
-        box-shadow: 0 4px 20px var(--shadow-light);
-        backdrop-filter: blur(10px);
-        border: 1px solid var(--border-color);
+        box-shadow:
+          0 24px 60px var(--shadow-light),
+          inset 0 1px 0 var(--glass-highlight);
+        backdrop-filter: blur(18px) saturate(140%);
+        -webkit-backdrop-filter: blur(18px) saturate(140%);
+        border: 1px solid var(--glass-border);
         overflow: hidden;
-        background: var(--bg-secondary);
+        background: var(--glass-bg-strong);
         position: relative;
         transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         transform-origin: center top;
         will-change: transform, opacity;
       }
+
 
       .options-container.removing {
         animation: removeContainer 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
@@ -88,25 +102,22 @@
       .options-container::after {
         content: '';
         position: absolute;
-        width: 14px;
-        height: 14px;
-        border-color: var(--accent-gold);
-        opacity: 0.9;
+        inset: 0;
+        pointer-events: none;
         z-index: 10;
       }
       .options-container::before {
-        top: var(--spacing-xs);
-        left: var(--spacing-xs);
-        border-top: 2px solid var(--accent-gold);
-        border-left: 2px solid var(--accent-gold);
-        border-radius: 2px 0 0 0;
+        background: linear-gradient(
+          140deg,
+          rgba(255, 255, 255, 0.45) 0%,
+          rgba(255, 255, 255, 0.15) 35%,
+          transparent 60%
+        );
+        opacity: 0.8;
       }
       .options-container::after {
-        right: var(--spacing-xs);
-        bottom: var(--spacing-xs);
-        border-right: 2px solid var(--accent-gold);
-        border-bottom: 2px solid var(--accent-gold);
-        border-radius: 0 0 var(--corner-radius) 0;
+        background: radial-gradient(circle at 80% 0%, rgba(79, 156, 255, 0.25), transparent 45%);
+        opacity: 0.6;
       }
 
       .options-header {
@@ -114,9 +125,10 @@
         grid-template-columns: 1fr auto 1fr;
         align-items: center;
         padding: var(--spacing-m) var(--spacing-l);
-        background: linear-gradient(135deg, var(--bg-secondary), var(--bg-primary));
-        border-bottom: 1px solid var(--border-color);
+        background: var(--glass-header);
+        border-bottom: 1px solid var(--glass-border);
         position: relative;
+        cursor: pointer;
       }
 
       .options-title {
@@ -127,6 +139,7 @@
         text-align: center;
         grid-column: 2;
       }
+
 
       @media (max-width: 479px) {
         .options-header {
@@ -163,8 +176,8 @@
       }
 
       .theme-toggle {
-        background: var(--bg-primary);
-        border: 1px solid var(--border-color);
+        background: var(--glass-bg);
+        border: 1px solid var(--glass-border);
         border-radius: 999px;
         padding: var(--spacing-xs) var(--spacing-s);
         cursor: pointer;
@@ -174,6 +187,14 @@
         align-items: center;
         gap: 6px;
         will-change: transform;
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+      }
+
+      .theme-toggle svg {
+        width: 16px;
+        height: 16px;
+        stroke: currentColor;
       }
 
       .theme-toggle:hover {
@@ -182,8 +203,8 @@
       }
 
       .mode-toggle {
-        background: var(--bg-primary);
-        border: 1px solid var(--border-color);
+        background: var(--glass-bg);
+        border: 1px solid var(--glass-border);
         border-radius: 999px;
         padding: var(--spacing-xs) var(--spacing-m);
         cursor: pointer;
@@ -196,6 +217,8 @@
         align-items: center;
         gap: 6px;
         will-change: transform;
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
       }
 
       .mode-toggle:hover {
@@ -213,6 +236,12 @@
         display: grid;
         grid-template-columns: 1fr;
         gap: var(--spacing-s);
+        max-height: 800px;
+        opacity: 1;
+        transition:
+          max-height 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+          opacity 0.25s ease,
+          padding 0.35s cubic-bezier(0.4, 0, 0.2, 1);
       }
 
       @media (min-width: 480px) {
@@ -222,8 +251,8 @@
       }
 
       .option-item {
-        background: var(--bg-primary);
-        border: 1px solid var(--border-color);
+        background: var(--glass-bg);
+        border: 1px solid var(--glass-border);
         border-radius: var(--corner-radius);
         padding: var(--spacing-m);
         cursor: pointer;
@@ -238,6 +267,18 @@
         opacity: 0;
         animation: fadeIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
         will-change: transform, opacity;
+        box-shadow: 0 12px 24px rgba(15, 23, 42, 0.08);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+      }
+
+      .option-item::before,
+      .option-item::after {
+        content: '';
+        position: absolute;
+        pointer-events: none;
+        opacity: 0;
+        transition: opacity 0.25s ease;
       }
 
       @keyframes fadeIn {
@@ -252,31 +293,57 @@
       }
 
       .option-item.sending {
-        animation: sendEffect 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+        opacity: 1;
+        animation: pressGlow 0.35s ease-out;
       }
 
-      @keyframes sendEffect {
+      @keyframes pressGlow {
         0% {
           transform: scale(1);
         }
-        40% {
-          transform: scale(1.1);
-          background: var(--accent-gold);
-          color: var(--bg-secondary);
-          box-shadow: 0 0 20px var(--accent-gold);
+        60% {
+          transform: scale(0.98);
+          box-shadow:
+            0 0 0 2px rgba(79, 156, 255, 0.25),
+            0 10px 24px rgba(15, 23, 42, 0.18);
         }
         100% {
-          transform: scale(0);
-          opacity: 0;
-          filter: blur(10px);
+          transform: scale(1);
         }
       }
 
       .option-item:hover {
-        background: var(--hover-bg);
-        transform: translateY(-2px);
+        background: var(--glass-bg-strong);
+        transform: translateY(-3px) scale(1.01);
         box-shadow: 0 4px 12px var(--shadow-medium);
         border-color: var(--accent-gold);
+      }
+
+      /* Typography + animation + decoration per theme */
+
+      .options-container.collapsed .options-grid {
+        max-height: 0;
+        padding: 0 var(--spacing-l);
+        opacity: 0;
+        pointer-events: none;
+      }
+
+      .options-container.collapsed .options-header {
+        border-bottom-color: transparent;
+      }
+
+      .theme-toggle:focus-visible,
+      .mode-toggle:focus-visible,
+      .option-item:focus-visible {
+        outline: 2px solid var(--accent-gold);
+        outline-offset: 2px;
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        * {
+          animation: none !important;
+          transition: none !important;
+        }
       }
 
       .success-message {
@@ -318,13 +385,24 @@
   <body>
     <div id="options-wrapper">
       <div class="options-container" id="options-container">
-        <div class="options-header">
+        <div class="options-header" id="options-header">
           <div class="options-title">快速回复选项</div>
           <div class="header-controls">
             <button class="mode-toggle" id="mode-toggle" onclick="toggleMode()">
               <span id="mode-text">直接发送</span>
             </button>
-            <div class="theme-toggle" onclick="toggleTheme()">🌓</div>
+            <button class="theme-toggle" type="button" onclick="toggleTheme()" aria-label="切换主题">
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke-width="1.6"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                aria-hidden="true"
+              >
+                <path d="M12 3a1 1 0 0 0 0 18c4.418 0 8-3.582 8-8a8.01 8.01 0 0 1-8-10z" />
+              </svg>
+            </button>
           </div>
         </div>
         <div class="options-grid" id="options-grid"></div>
@@ -335,6 +413,7 @@
 
     <script>
       let currentMode = 'send';
+      let isCollapsed = false;
 
       const triggerQuickReply = (text, mode) => {
         if (!text || ['…', '...'].includes(text.trim()) || text.trim().length === 0) return;
@@ -390,6 +469,16 @@
         }, 400);
       }
 
+      function setCollapsed(collapsed) {
+        const container = document.getElementById('options-container');
+        isCollapsed = collapsed;
+        container.classList.toggle('collapsed', collapsed);
+      }
+
+      function toggleCollapsed() {
+        setCollapsed(!isCollapsed);
+      }
+
       function showSuccessMessage(mode) {
         const message = document.getElementById('success-message');
         const messages = {
@@ -409,6 +498,7 @@
         const savedTheme = localStorage.getItem('theme') || 'light';
         document.body.setAttribute('data-theme', savedTheme);
       }
+
 
       function initMode() {
         const modeNames = {
@@ -457,9 +547,17 @@
         if (currentMode !== 'append') {
           optionItem.classList.add('sending');
           setTimeout(() => {
-            removeOptionsContainer();
-          }, 500);
+            optionItem.classList.remove('sending');
+          }, 380);
+          setTimeout(() => {
+            setCollapsed(true);
+          }, 300);
         }
+      });
+
+      document.getElementById('options-header').addEventListener('click', function (event) {
+        if (event.target.closest('.header-controls')) return;
+        toggleCollapsed();
       });
 
       setTimeout(function () {
@@ -469,6 +567,7 @@
         const match = chat_message.message.match(/<options>((?:(?!<options>).)*?)<\/options>/s);
         const optionsData = match ? match[1] : '';
         createOptions(optionsData);
+        setCollapsed(false);
       }, 0);
     </script>
   </body>
