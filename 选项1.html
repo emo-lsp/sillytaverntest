@@ -1,0 +1,472 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>快速回复选项</title>
+    <style>
+      :root {
+        --corner-radius: 12px;
+        --spacing-xxs: 4px;
+        --spacing-xs: 6px;
+        --spacing-s: 10px;
+        --spacing-m: 14px;
+        --spacing-l: 18px;
+
+        --bg-primary: #fafafa;
+        --bg-secondary: #ffffff;
+        --text-primary: #2c2c2c;
+        --text-secondary: #666666;
+        --border-color: #e0e0e0;
+        --shadow-light: rgba(0, 0, 0, 0.08);
+        --shadow-medium: rgba(0, 0, 0, 0.12);
+        --accent-gold: #d4af37;
+        --hover-bg: #f5f5f5;
+      }
+
+      [data-theme='dark'] {
+        --bg-primary: #1a1a1a;
+        --bg-secondary: #2d2d2d;
+        --text-primary: #e0e0e0;
+        --text-secondary: #a0a0a0;
+        --border-color: #404040;
+        --shadow-light: rgba(0, 0, 0, 0.3);
+        --shadow-medium: rgba(0, 0, 0, 0.5);
+        --accent-gold: #f1c40f;
+        --hover-bg: #3a3a3a;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: 'Microsoft YaHei', sans-serif;
+        color: var(--text-primary);
+        padding: var(--spacing-l);
+        transition:
+          color 0.3s ease,
+          background-color 0.3s ease;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+      }
+
+      #options-wrapper {
+        max-width: 600px;
+        margin: 0 auto;
+        position: relative;
+      }
+
+      .options-container {
+        border-radius: var(--corner-radius);
+        box-shadow: 0 4px 20px var(--shadow-light);
+        backdrop-filter: blur(10px);
+        border: 1px solid var(--border-color);
+        overflow: hidden;
+        background: var(--bg-secondary);
+        position: relative;
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        transform-origin: center top;
+        will-change: transform, opacity;
+      }
+
+      .options-container.removing {
+        animation: removeContainer 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+      }
+
+      @keyframes removeContainer {
+        to {
+          opacity: 0;
+          transform: scale(0.95) translateY(-10px);
+          filter: blur(10px);
+        }
+      }
+
+      .options-container::before,
+      .options-container::after {
+        content: '';
+        position: absolute;
+        width: 14px;
+        height: 14px;
+        border-color: var(--accent-gold);
+        opacity: 0.9;
+        z-index: 10;
+      }
+      .options-container::before {
+        top: var(--spacing-xs);
+        left: var(--spacing-xs);
+        border-top: 2px solid var(--accent-gold);
+        border-left: 2px solid var(--accent-gold);
+        border-radius: 2px 0 0 0;
+      }
+      .options-container::after {
+        right: var(--spacing-xs);
+        bottom: var(--spacing-xs);
+        border-right: 2px solid var(--accent-gold);
+        border-bottom: 2px solid var(--accent-gold);
+        border-radius: 0 0 var(--corner-radius) 0;
+      }
+
+      .options-header {
+        display: grid;
+        grid-template-columns: 1fr auto 1fr;
+        align-items: center;
+        padding: var(--spacing-m) var(--spacing-l);
+        background: linear-gradient(135deg, var(--bg-secondary), var(--bg-primary));
+        border-bottom: 1px solid var(--border-color);
+        position: relative;
+      }
+
+      .options-title {
+        font-size: 18px;
+        font-weight: 600;
+        color: var(--text-primary);
+        letter-spacing: 0.5px;
+        text-align: center;
+        grid-column: 2;
+      }
+
+      @media (max-width: 479px) {
+        .options-header {
+          grid-template-columns: 1fr;
+          grid-template-rows: auto auto;
+          row-gap: var(--spacing-xs);
+          padding: var(--spacing-s) var(--spacing-m);
+        }
+
+        .options-title {
+          font-size: 16px;
+          grid-column: 1;
+        }
+
+        .header-controls {
+          grid-column: 1;
+          justify-self: center;
+          gap: var(--spacing-xs);
+        }
+
+        .theme-toggle,
+        .mode-toggle {
+          padding: var(--spacing-xxs) var(--spacing-s);
+          font-size: 12px;
+        }
+      }
+
+      .header-controls {
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-s);
+        grid-column: 3;
+        justify-self: end;
+      }
+
+      .theme-toggle {
+        background: var(--bg-primary);
+        border: 1px solid var(--border-color);
+        border-radius: 999px;
+        padding: var(--spacing-xs) var(--spacing-s);
+        cursor: pointer;
+        font-size: 14px;
+        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        will-change: transform;
+      }
+
+      .theme-toggle:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px var(--shadow-medium);
+      }
+
+      .mode-toggle {
+        background: var(--bg-primary);
+        border: 1px solid var(--border-color);
+        border-radius: 999px;
+        padding: var(--spacing-xs) var(--spacing-m);
+        cursor: pointer;
+        font-size: 12px;
+        color: var(--text-primary);
+        font-weight: 500;
+        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        white-space: nowrap;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        will-change: transform;
+      }
+
+      .mode-toggle:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px var(--shadow-medium);
+        background: var(--hover-bg);
+      }
+
+      .mode-toggle:active {
+        transform: translateY(0);
+      }
+
+      .options-grid {
+        padding: var(--spacing-l);
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: var(--spacing-s);
+      }
+
+      @media (min-width: 480px) {
+        .options-grid {
+          grid-template-columns: 1fr 1fr;
+        }
+      }
+
+      .option-item {
+        background: var(--bg-primary);
+        border: 1px solid var(--border-color);
+        border-radius: var(--corner-radius);
+        padding: var(--spacing-m);
+        cursor: pointer;
+        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        position: relative;
+        overflow: hidden;
+        text-align: center;
+        font-weight: 500;
+        font-size: 14px;
+        color: var(--text-primary);
+        white-space: pre-wrap;
+        opacity: 0;
+        animation: fadeIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+        will-change: transform, opacity;
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(20px) scale(0.9);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0) scale(1);
+        }
+      }
+
+      .option-item.sending {
+        animation: sendEffect 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+      }
+
+      @keyframes sendEffect {
+        0% {
+          transform: scale(1);
+        }
+        40% {
+          transform: scale(1.1);
+          background: var(--accent-gold);
+          color: var(--bg-secondary);
+          box-shadow: 0 0 20px var(--accent-gold);
+        }
+        100% {
+          transform: scale(0);
+          opacity: 0;
+          filter: blur(10px);
+        }
+      }
+
+      .option-item:hover {
+        background: var(--hover-bg);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px var(--shadow-medium);
+        border-color: var(--accent-gold);
+      }
+
+      .success-message {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%) scale(0.8);
+        background: var(--accent-gold);
+        color: var(--bg-secondary);
+        padding: 16px 32px;
+        border-radius: 999px;
+        font-weight: 600;
+        box-shadow: 0 4px 20px var(--shadow-medium);
+        opacity: 0;
+        pointer-events: none;
+        transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        will-change: transform, opacity;
+      }
+
+      .success-message.show {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1);
+        animation: successPulse 1s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+
+      @keyframes successPulse {
+        0% {
+          box-shadow: 0 0 0 0 var(--accent-gold);
+        }
+        50% {
+          box-shadow: 0 0 0 20px transparent;
+        }
+        100% {
+          box-shadow: 0 0 0 0 transparent;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div id="options-wrapper">
+      <div class="options-container" id="options-container">
+        <div class="options-header">
+          <div class="options-title">快速回复选项</div>
+          <div class="header-controls">
+            <button class="mode-toggle" id="mode-toggle" onclick="toggleMode()">
+              <span id="mode-text">直接发送</span>
+            </button>
+            <div class="theme-toggle" onclick="toggleTheme()">🌓</div>
+          </div>
+        </div>
+        <div class="options-grid" id="options-grid"></div>
+      </div>
+    </div>
+
+    <div class="success-message" id="success-message">已发送</div>
+
+    <script>
+      let currentMode = 'send';
+
+      const triggerQuickReply = (text, mode) => {
+        if (!text || ['…', '...'].includes(text.trim()) || text.trim().length === 0) return;
+
+        if (typeof triggerSlash === 'function') {
+          if (mode === 'send') {
+            triggerSlash(`/send ${text}|/trigger`);
+          } else if (mode === 'setinput') {
+            triggerSlash(`/setinput ${text}`);
+          } else if (mode === 'append') {
+            const $ = window.parent.$;
+            const currentInput = $('#send_textarea').val() || '';
+            const newInput = currentInput ? `${currentInput}\n${text}` : text;
+            triggerSlash(`/setinput ${newInput}`);
+          }
+        } else {
+          console.log('SillyTavern environment not detected. Mode:', mode, 'Text:', text);
+        }
+      };
+
+      function toggleMode() {
+        const modes = ['send', 'setinput', 'append'];
+        const modeNames = {
+          send: '直接发送',
+          setinput: '仅输入',
+          append: '追加输入',
+        };
+
+        const currentIndex = modes.indexOf(currentMode);
+        const nextIndex = (currentIndex + 1) % modes.length;
+        currentMode = modes[nextIndex];
+
+        localStorage.setItem('optionMode', currentMode);
+        document.getElementById('mode-text').textContent = modeNames[currentMode];
+      }
+
+      function toggleTheme() {
+        const body = document.body;
+        const currentTheme = body.getAttribute('data-theme');
+        const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+        body.setAttribute('data-theme', newTheme);
+        localStorage.setItem('theme', newTheme);
+      }
+
+      function removeOptionsContainer() {
+        const container = document.getElementById('options-container');
+        const wrapper = document.getElementById('options-wrapper');
+
+        container.classList.add('removing');
+
+        setTimeout(() => {
+          wrapper.remove();
+        }, 400);
+      }
+
+      function showSuccessMessage(mode) {
+        const message = document.getElementById('success-message');
+        const messages = {
+          send: '已发送',
+          setinput: '已填入输入框',
+          append: '已追加到输入框',
+        };
+        message.textContent = messages[mode] || '已完成';
+        message.classList.add('show');
+
+        setTimeout(() => {
+          message.classList.remove('show');
+        }, 1200);
+      }
+
+      function initTheme() {
+        const savedTheme = localStorage.getItem('theme') || 'light';
+        document.body.setAttribute('data-theme', savedTheme);
+      }
+
+      function initMode() {
+        const modeNames = {
+          send: '直接发送',
+          setinput: '仅输入',
+          append: '追加输入',
+        };
+
+        const savedMode = localStorage.getItem('optionMode') || 'send';
+        currentMode = savedMode;
+        document.getElementById('mode-text').textContent = modeNames[currentMode];
+      }
+
+      function createOptions(optionsString) {
+        const optionsGrid = document.getElementById('options-grid');
+        optionsGrid.innerHTML = '';
+
+        const options = optionsString
+          .split('|')
+          .map(opt => opt.trim())
+          .filter(opt => opt.length > 0);
+
+        options.forEach((option, index) => {
+          const optionElement = document.createElement('div');
+          optionElement.className = 'option-item';
+
+          if (option.length > 20) {
+            optionElement.style.fontSize = '13px';
+          }
+
+          optionElement.textContent = option;
+          optionElement.style.animationDelay = `${index * 0.05}s`;
+          optionsGrid.appendChild(optionElement);
+        });
+      }
+
+      document.getElementById('options-grid').addEventListener('click', function (event) {
+        const optionItem = event.target.closest('.option-item');
+        if (!optionItem) return;
+
+        const optionText = optionItem.textContent.trim();
+        triggerQuickReply(optionText, currentMode);
+
+        showSuccessMessage(currentMode);
+
+        if (currentMode !== 'append') {
+          optionItem.classList.add('sending');
+          setTimeout(() => {
+            removeOptionsContainer();
+          }, 500);
+        }
+      });
+
+      document.addEventListener('DOMContentLoaded', function () {
+        initTheme();
+        initMode();
+        createOptions('$1');
+      });
+    </script>
+  </body>
+</html>
