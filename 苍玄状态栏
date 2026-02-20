@@ -1,0 +1,1006 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes" />
+    <title>苍玄界·修仙状态</title>
+    <style>
+      :root {
+        --corner-radius: 16px;
+        --spacing-xs: 6px;
+        --spacing-s: 10px;
+        --spacing-m: 14px;
+        --spacing-l: 18px;
+
+        --primary-gold: #c9a961;
+        --primary-jade: #5a8a7e;
+        --primary-red: #a73a3a;
+        --primary-blue: #4a7c9e;
+
+        --bg-primary: #faf8f5;
+        --bg-secondary: #fff9f0;
+        --text-primary: #3a3330;
+        --text-secondary: #6a635a;
+        --border-color: #d4c4b0;
+        --border-light: #e8ddd4;
+        --shadow-light: rgba(58, 51, 48, 0.08);
+        --shadow-medium: rgba(58, 51, 48, 0.12);
+        --shadow-strong: rgba(58, 51, 48, 0.18);
+
+        --glass-panel: rgba(255, 255, 255, 0.58);
+        --glass-panel-strong: rgba(255, 255, 255, 0.72);
+        --glass-panel-soft: rgba(255, 249, 240, 0.42);
+        --glass-border: rgba(255, 255, 255, 0.55);
+        --glass-shine: rgba(255, 255, 255, 0.28);
+
+        --delta-up: #2f9a68;
+        --delta-down: #c84d4d;
+        --delta-zero: #8b847c;
+        --delta-abnormal: #b58f29;
+        --realm-border: rgba(74, 124, 158, 0.42);
+        --realm-bg: rgba(74, 124, 158, 0.12);
+        --delta-up-border: rgba(47, 154, 104, 0.4);
+        --delta-up-bg: rgba(47, 154, 104, 0.12);
+        --delta-down-border: rgba(200, 77, 77, 0.4);
+        --delta-down-bg: rgba(200, 77, 77, 0.12);
+        --delta-zero-border: rgba(139, 132, 124, 0.42);
+        --delta-zero-bg: rgba(139, 132, 124, 0.1);
+        --delta-abnormal-border: rgba(181, 143, 41, 0.46);
+        --delta-abnormal-bg: rgba(181, 143, 41, 0.11);
+        --flash-shadow: rgba(201, 169, 97, 0.45);
+
+        --transition-smooth: cubic-bezier(0.4, 0, 0.2, 1);
+      }
+
+      [data-theme='dark'] {
+        --primary-gold: #d4af37;
+        --primary-jade: #6fa393;
+        --primary-red: #c85450;
+        --primary-blue: #5a9cc8;
+
+        --bg-primary: #1a1815;
+        --bg-secondary: #252320;
+        --text-primary: #f0e8e0;
+        --text-secondary: #b8b0a8;
+        --border-color: #4a453f;
+        --border-light: #3a3530;
+        --shadow-light: rgba(0, 0, 0, 0.2);
+        --shadow-medium: rgba(0, 0, 0, 0.3);
+        --shadow-strong: rgba(0, 0, 0, 0.4);
+
+        --glass-panel: rgba(42, 40, 37, 0.62);
+        --glass-panel-strong: rgba(52, 49, 46, 0.74);
+        --glass-panel-soft: rgba(37, 35, 32, 0.44);
+        --glass-border: rgba(110, 102, 92, 0.45);
+        --glass-shine: rgba(255, 255, 255, 0.1);
+
+        --delta-up: #73cfa1;
+        --delta-down: #f28e8e;
+        --delta-zero: #9f988f;
+        --delta-abnormal: #dfc074;
+        --realm-border: rgba(90, 156, 200, 0.48);
+        --realm-bg: rgba(90, 156, 200, 0.16);
+        --delta-up-border: rgba(115, 207, 161, 0.44);
+        --delta-up-bg: rgba(115, 207, 161, 0.14);
+        --delta-down-border: rgba(242, 142, 142, 0.42);
+        --delta-down-bg: rgba(242, 142, 142, 0.15);
+        --delta-zero-border: rgba(159, 152, 143, 0.45);
+        --delta-zero-bg: rgba(159, 152, 143, 0.12);
+        --delta-abnormal-border: rgba(223, 192, 116, 0.46);
+        --delta-abnormal-bg: rgba(223, 192, 116, 0.12);
+        --flash-shadow: rgba(212, 175, 55, 0.4);
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        -webkit-tap-highlight-color: transparent;
+      }
+
+      body {
+        font-family: 'STSong', 'SimSun', '宋体', -apple-system, BlinkMacSystemFont, serif;
+        background: transparent;
+        color: var(--text-primary);
+        padding: var(--spacing-m);
+        text-rendering: optimizeLegibility;
+        -webkit-font-smoothing: antialiased;
+      }
+
+      .status-container {
+        max-width: 720px;
+        margin: 0 auto;
+        animation: containerIn 0.38s var(--transition-smooth) both;
+      }
+
+      .status-shell {
+        background: var(--glass-panel);
+        border: 1px solid var(--glass-border);
+        border-radius: var(--corner-radius);
+        box-shadow: 0 12px 30px var(--shadow-medium);
+        position: relative;
+        isolation: isolate;
+        backdrop-filter: blur(14px) saturate(130%);
+        -webkit-backdrop-filter: blur(14px) saturate(130%);
+        overflow: hidden;
+      }
+
+      .status-shell::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(155deg, var(--glass-shine) 0%, transparent 45%, var(--glass-shine) 100%);
+        pointer-events: none;
+        z-index: 0;
+      }
+
+      .status-header {
+        padding: var(--spacing-l);
+        position: relative;
+        z-index: 1;
+        border-bottom: 1px solid var(--border-light);
+      }
+
+      .title-wrap {
+        position: relative;
+      }
+
+      .title-main {
+        font-size: 24px;
+        color: var(--primary-gold);
+        margin-bottom: 8px;
+        letter-spacing: 3px;
+        font-weight: 600;
+      }
+
+      .world-info {
+        font-size: 13px;
+        color: var(--text-secondary);
+        display: flex;
+        justify-content: flex-start;
+        gap: 20px;
+      }
+
+      .world-info-item {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 4px 8px;
+        border-radius: 999px;
+        background: var(--glass-panel-soft);
+        border: 1px solid var(--border-light);
+      }
+
+      .theme-toggle {
+        position: absolute;
+        top: 14px;
+        right: 14px;
+        width: 30px;
+        height: 30px;
+        border: 1px solid var(--border-light);
+        background: var(--glass-panel-strong);
+        color: var(--text-secondary);
+        border-radius: 50%;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s var(--transition-smooth);
+        z-index: 5;
+        pointer-events: auto;
+      }
+
+      .theme-toggle:hover {
+        border-color: var(--primary-gold);
+        color: var(--primary-gold);
+      }
+
+      .theme-toggle svg {
+        width: 14px;
+        height: 14px;
+        fill: currentColor;
+      }
+
+      .section-module {
+        position: relative;
+        z-index: 1;
+      }
+
+      .section-module + .section-module {
+        border-top: 1px solid var(--border-light);
+      }
+
+      .section-header {
+        background: transparent;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.02);
+        padding: 12px 16px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        cursor: pointer;
+        user-select: none;
+        transition: background-color 0.2s var(--transition-smooth);
+      }
+
+      .section-header:hover {
+        background: rgba(255, 255, 255, 0.08);
+      }
+
+      .section-title {
+        font-size: 15px;
+        color: var(--text-primary);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-weight: 600;
+      }
+
+      .section-toggle {
+        width: 24px;
+        height: 24px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--text-secondary);
+        transition: transform 0.22s var(--transition-smooth);
+      }
+
+      .section-toggle.collapsed {
+        transform: rotate(-90deg);
+      }
+
+      .section-content {
+        padding: 16px;
+        max-height: 920px;
+        opacity: 1;
+        overflow: hidden;
+        transition: max-height 0.32s var(--transition-smooth), opacity 0.22s var(--transition-smooth), padding 0.28s var(--transition-smooth);
+      }
+
+      .section-content.collapsed {
+        max-height: 0;
+        opacity: 0;
+        padding-top: 0;
+        padding-bottom: 0;
+      }
+
+      .user-status {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 12px;
+      }
+
+      .status-item {
+        text-align: center;
+        padding: 12px;
+        background: var(--glass-panel-soft);
+        border: 1px solid var(--border-light);
+        border-radius: 12px;
+      }
+
+      .status-label {
+        font-size: 12px;
+        color: var(--text-secondary);
+        margin-bottom: 6px;
+        letter-spacing: 0.8px;
+      }
+
+      .status-value {
+        font-size: 16px;
+        color: var(--text-primary);
+        font-weight: 700;
+      }
+
+      .quota-available {
+        color: var(--primary-jade);
+      }
+
+      .quota-used {
+        color: var(--primary-red);
+      }
+
+      .character-list {
+        display: grid;
+        gap: 12px;
+      }
+
+      .character-card {
+        border: 1px solid var(--border-light);
+        padding: 14px;
+        border-radius: 12px;
+        background: var(--glass-panel-soft);
+        transition: border-color 0.2s var(--transition-smooth), box-shadow 0.2s var(--transition-smooth);
+      }
+
+      .character-card:hover {
+        border-color: var(--primary-gold);
+        box-shadow: 0 6px 14px var(--shadow-light);
+      }
+
+      .character-info {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 10px;
+      }
+
+      .character-name {
+        font-size: 16px;
+        color: var(--text-primary);
+        font-weight: 700;
+      }
+
+      .character-realm {
+        font-size: 12px;
+        color: var(--primary-blue);
+        padding: 2px 8px;
+        border: 1px solid var(--realm-border);
+        border-radius: 999px;
+        background: var(--realm-bg);
+      }
+
+      .affection-display {
+        margin-top: 8px;
+      }
+
+      .affection-info {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 7px;
+        font-size: 13px;
+      }
+
+      .affection-label {
+        color: var(--text-secondary);
+      }
+
+      .affection-value {
+        color: var(--primary-red);
+        font-weight: 700;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .value-main {
+        min-width: 2ch;
+        text-align: right;
+      }
+
+      .value-main.value-flash {
+        animation: valueFlash 0.6s var(--transition-smooth);
+      }
+
+      .delta-badge {
+        min-width: 46px;
+        height: 18px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 999px;
+        font-size: 11px;
+        letter-spacing: 0.2px;
+        border: 1px solid transparent;
+        padding: 0 6px;
+      }
+
+      .delta-up {
+        color: var(--delta-up);
+        border-color: var(--delta-up-border);
+        background: var(--delta-up-bg);
+      }
+
+      .delta-down {
+        color: var(--delta-down);
+        border-color: var(--delta-down-border);
+        background: var(--delta-down-bg);
+      }
+
+      .delta-zero,
+      .delta-zeroed {
+        color: var(--delta-zero);
+        border-color: var(--delta-zero-border);
+        background: var(--delta-zero-bg);
+      }
+
+      .delta-abnormal {
+        color: var(--delta-abnormal);
+        border-color: var(--delta-abnormal-border);
+        background: var(--delta-abnormal-bg);
+      }
+
+      .progress-container {
+        width: 100%;
+        height: 8px;
+        background: var(--border-light);
+        border-radius: 999px;
+        overflow: hidden;
+        border: 1px solid var(--border-light);
+      }
+
+      .progress-fill {
+        height: 100%;
+        transition: width 0.25s var(--transition-smooth);
+      }
+
+      .progress-0-20 {
+        background: #8a8a8a;
+      }
+
+      .progress-20-60 {
+        background: #5a8a7e;
+      }
+
+      .progress-60-90 {
+        background: #c97a7e;
+      }
+
+      .progress-90-100 {
+        background: #a73a3a;
+      }
+
+      .jade-status {
+        margin-top: 8px;
+        font-size: 12px;
+        color: var(--text-secondary);
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+
+      .jade-indicator {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        border: 1px solid var(--border-color);
+      }
+
+      .jade-concealed {
+        background: var(--primary-jade);
+      }
+
+      .jade-revealed {
+        background: var(--primary-gold);
+      }
+
+      @keyframes containerIn {
+        from {
+          opacity: 0;
+          transform: translateY(8px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      @keyframes valueFlash {
+        0% {
+          text-shadow: 0 0 0 transparent;
+          transform: scale(1);
+        }
+        30% {
+          text-shadow: 0 0 10px var(--flash-shadow);
+          transform: scale(1.04);
+        }
+        100% {
+          text-shadow: 0 0 0 transparent;
+          transform: scale(1);
+        }
+      }
+
+      @media (max-width: 768px) {
+        body {
+          padding: var(--spacing-s);
+        }
+
+        .status-container {
+          max-width: 100%;
+        }
+
+        .title-main {
+          font-size: 20px;
+          letter-spacing: 2px;
+        }
+
+        .world-info {
+          font-size: 12px;
+          gap: 10px;
+          flex-wrap: wrap;
+        }
+
+        .user-status {
+          grid-template-columns: 1fr;
+        }
+
+        .theme-toggle {
+          width: 28px;
+          height: 28px;
+          top: 12px;
+          right: 12px;
+        }
+      }
+
+      @media (min-width: 920px) {
+        .character-list {
+          grid-template-columns: 1fr 1fr;
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        *,
+        *::before,
+        *::after {
+          animation: none !important;
+          transition-duration: 0.01ms !important;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="status-container">
+      <div class="status-shell">
+        <div class="status-header">
+          <button class="theme-toggle" id="themeToggle" aria-label="切换主题" onclick="toggleTheme(event)">
+            <svg viewBox="0 0 24 24"><path d="M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9 9-4.03 9-9c0-.46-.04-.92-.1-1.36-.98 1.37-2.58 2.26-4.4 2.26-3.03 0-5.5-2.47-5.5-5.5 0-1.82.89-3.42 2.26-4.4-.44-.06-.9-.1-1.36-.1z"/></svg>
+          </button>
+          <div class="title-wrap">
+            <h1 class="title-main">苍玄修仙录</h1>
+            <div class="world-info">
+              <div class="world-info-item"><span>历</span><span id="worldDate">37000-03-15</span></div>
+              <div class="world-info-item"><span>时</span><span id="worldTime">06:00</span></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="section-module">
+          <div class="section-header" onclick="toggleSection('cultivation')">
+            <div class="section-title"><span>修</span><span>修炼状态</span></div>
+            <div class="section-toggle" id="cultivation-toggle">▼</div>
+          </div>
+          <div class="section-content" id="cultivation-content">
+            <div class="user-status">
+              <div class="status-item">
+                <div class="status-label">当前境界</div>
+                <div class="status-value" id="userRealm">凡人</div>
+              </div>
+              <div class="status-item">
+                <div class="status-label">双修额度</div>
+                <div class="status-value" id="userQuota"><span class="quota-available">可用</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="section-module">
+          <div class="section-header" onclick="toggleSection('companions')">
+            <div class="section-title"><span>缘</span><span>道侣情缘</span></div>
+            <div class="section-toggle" id="companions-toggle">▼</div>
+          </div>
+          <div class="section-content" id="companions-content">
+            <div class="character-list">
+            <div class="character-card">
+              <div class="character-info">
+                <div class="character-name">虞清寒</div>
+                <div class="character-realm" id="yuqinghanRealm">合体后期</div>
+              </div>
+              <div class="affection-display">
+                <div class="affection-info">
+                  <span class="affection-label">倾心值</span>
+                  <span class="affection-value">
+                    <span id="yuqinghanAffection" class="value-main">0</span>
+                    <span id="yuqinghanDelta" class="delta-badge delta-zero">±0</span>
+                  </span>
+                </div>
+                <div class="progress-container"><div class="progress-fill progress-0-20" id="yuqinghanProgress" style="width: 0%"></div></div>
+              </div>
+            </div>
+
+            <div class="character-card">
+              <div class="character-info">
+                <div class="character-name">殷妙烟</div>
+                <div class="character-realm" id="yinmiaoyanRealm">合体前期</div>
+              </div>
+              <div class="affection-display">
+                <div class="affection-info">
+                  <span class="affection-label">倾心值</span>
+                  <span class="affection-value">
+                    <span id="yinmiaoyanAffection" class="value-main">0</span>
+                    <span id="yinmiaoyanDelta" class="delta-badge delta-zero">±0</span>
+                  </span>
+                </div>
+                <div class="progress-container"><div class="progress-fill progress-0-20" id="yinmiaoyanProgress" style="width: 0%"></div></div>
+              </div>
+            </div>
+
+            <div class="character-card">
+              <div class="character-info">
+                <div class="character-name">秦素霜</div>
+                <div class="character-realm" id="qinsushuangRealm">化神中期</div>
+              </div>
+              <div class="affection-display">
+                <div class="affection-info">
+                  <span class="affection-label">倾心值</span>
+                  <span class="affection-value">
+                    <span id="qinsushuangAffection" class="value-main">5</span>
+                    <span id="qinsushuangDelta" class="delta-badge delta-zero">±0</span>
+                  </span>
+                </div>
+                <div class="progress-container"><div class="progress-fill progress-0-20" id="qinsushuangProgress" style="width: 5%"></div></div>
+              </div>
+            </div>
+
+            <div class="character-card">
+              <div class="character-info">
+                <div class="character-name">江小鲤</div>
+                <div class="character-realm" id="jiangxiaoliRealm">凡人</div>
+              </div>
+              <div class="affection-display">
+                <div class="affection-info">
+                  <span class="affection-label">倾心值</span>
+                  <span class="affection-value">
+                    <span id="jiangxiaoliAffection" class="value-main">10</span>
+                    <span id="jiangxiaoliDelta" class="delta-badge delta-zero">±0</span>
+                  </span>
+                </div>
+                <div class="progress-container"><div class="progress-fill progress-0-20" id="jiangxiaoliProgress" style="width: 10%"></div></div>
+              </div>
+              <div class="jade-status">
+                <span class="jade-indicator jade-concealed" id="jadeIndicator"></span>
+                <span id="jadeStatus">遮掩真容</span>
+              </div>
+            </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const UNIFIED_THEME_KEY = 'cangxuan_unified_theme';
+      const elemCache = {};
+
+      function cacheElement(id) {
+        if (!elemCache[id]) {
+          elemCache[id] = document.getElementById(id);
+        }
+        return elemCache[id];
+      }
+
+      function applyTheme(theme) {
+        const effectiveTheme = theme === 'light' ? 'light' : 'dark';
+        document.body.setAttribute('data-theme', effectiveTheme);
+      }
+
+      function toggleTheme(event) {
+        if (event && event._themeToggleHandled) {
+          return;
+        }
+        if (event) {
+          event._themeToggleHandled = true;
+        }
+        if (event) {
+          event.stopPropagation();
+          event.preventDefault();
+        }
+        const currentTheme = document.body.getAttribute('data-theme') || 'dark';
+        const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+        applyTheme(newTheme);
+        localStorage.setItem(UNIFIED_THEME_KEY, newTheme);
+      }
+
+      window.addEventListener('storage', event => {
+        if (event.key === UNIFIED_THEME_KEY) {
+          applyTheme(event.newValue);
+        }
+      });
+
+      function SafeGetValue(obj, path, defaultValue = 'N/A') {
+        let keys = Array.isArray(path) ? path : path.split('.');
+        let current = obj;
+        for (let i = 0; i < keys.length; i++) {
+          if (
+            current === undefined ||
+            current === null ||
+            typeof current !== 'object' ||
+            !current.hasOwnProperty(keys[i])
+          ) {
+            return defaultValue;
+          }
+          current = current[keys[i]];
+        }
+        if (current === undefined || current === null) {
+          return defaultValue;
+        }
+        if (Array.isArray(current)) {
+          if (current.length > 0) {
+            const actualValue = current[0];
+            if (typeof actualValue === 'boolean') {
+              return actualValue;
+            }
+            return String(actualValue);
+          } else {
+            return defaultValue;
+          }
+        }
+        if (typeof current === 'boolean') {
+          return current;
+        }
+        if (typeof current === 'number') {
+          return current;
+        }
+        if (typeof current === 'string') {
+          return current;
+        }
+        return JSON.stringify(current);
+      }
+
+      function updateProgressBar(barId, valueMainId, valueDescId, rawValue, min = 0, max = 100, color) {
+        const progressBar = cacheElement(barId);
+        const valueMainDisplay = cacheElement(valueMainId);
+        const valueDescDisplay = valueDescId ? cacheElement(valueDescId) : null;
+
+        if (!progressBar || !valueMainDisplay) {
+          return;
+        }
+
+        let numericValue = parseFloat(rawValue);
+        if (isNaN(numericValue)) {
+          numericValue = parseFloat(String(rawValue).replace(/[^0-9.-]/g, ''));
+        }
+
+        if (!isNaN(numericValue)) {
+          valueMainDisplay.textContent = numericValue;
+        } else {
+          valueMainDisplay.textContent = rawValue;
+        }
+
+        if (valueDescDisplay) {
+          valueDescDisplay.textContent = '';
+        }
+
+        if (!isNaN(numericValue)) {
+          numericValue = Math.max(min, Math.min(max, numericValue));
+          const range = max - min;
+          const percentage = range === 0 ? (numericValue >= max ? 100 : 0) : ((numericValue - min) / range) * 100;
+          progressBar.style.width = `${Math.max(0, Math.min(100, percentage))}%`;
+          if (color) {
+            progressBar.style.backgroundColor = color;
+          }
+        }
+      }
+
+      function toggleSection(sectionId) {
+        const content = cacheElement(`${sectionId}-content`);
+        const toggle = cacheElement(`${sectionId}-toggle`);
+
+        if (content && toggle) {
+          content.classList.toggle('collapsed');
+          toggle.classList.toggle('collapsed');
+          const isCollapsed = content.classList.contains('collapsed');
+          localStorage.setItem(`section-${sectionId}`, isCollapsed);
+        }
+      }
+
+      function toNumberValue(rawValue) {
+        if (typeof rawValue === 'number' && Number.isFinite(rawValue)) {
+          return rawValue;
+        }
+        if (Array.isArray(rawValue) && rawValue.length > 0) {
+          return toNumberValue(rawValue[0]);
+        }
+        if (typeof rawValue === 'string') {
+          const cleaned = rawValue.replace(/[^0-9.-]/g, '');
+          if (!cleaned || cleaned === '-' || cleaned === '.' || cleaned === '-.') {
+            return null;
+          }
+          const parsed = Number.parseFloat(cleaned);
+          return Number.isFinite(parsed) ? parsed : null;
+        }
+        return null;
+      }
+
+      function formatNumeric(value) {
+        if (!Number.isFinite(value)) {
+          return '0';
+        }
+        return Number.isInteger(value) ? String(value) : String(Math.round(value * 10) / 10);
+      }
+
+      function formatDelta(value) {
+        if (!Number.isFinite(value)) {
+          return '0';
+        }
+        const abs = Math.abs(value);
+        return Number.isInteger(abs) ? String(abs) : String(Math.round(abs * 10) / 10);
+      }
+
+      function setDeltaBadge(deltaId, currentNum, previousNum) {
+        const deltaElem = cacheElement(deltaId);
+        if (!deltaElem) return;
+
+        let text = '±0';
+        let className = 'delta-zero';
+
+        if (!Number.isFinite(currentNum) || !Number.isFinite(previousNum)) {
+          text = '异常';
+          className = 'delta-abnormal';
+        } else {
+          const delta = currentNum - previousNum;
+          if (delta > 0) {
+            text = `+${formatDelta(delta)} ↑`;
+            className = 'delta-up';
+          } else if (delta < 0) {
+            text = `-${formatDelta(delta)} ↓`;
+            className = 'delta-down';
+          } else if (currentNum === 0) {
+            text = '归零';
+            className = 'delta-zeroed';
+          }
+        }
+
+        deltaElem.textContent = text;
+        deltaElem.className = `delta-badge ${className}`;
+      }
+
+      function flashValue(valueId, currentNum, previousNum) {
+        if (!Number.isFinite(currentNum) || !Number.isFinite(previousNum) || currentNum === previousNum) {
+          return;
+        }
+        const valueElem = cacheElement(valueId);
+        if (!valueElem) return;
+        valueElem.classList.remove('value-flash');
+        requestAnimationFrame(() => {
+          valueElem.classList.add('value-flash');
+          setTimeout(() => {
+            valueElem.classList.remove('value-flash');
+          }, 620);
+        });
+      }
+
+      function getAffectionClass(value) {
+        const numValue = parseFloat(value);
+        if (numValue >= 90) return 'progress-90-100';
+        if (numValue >= 60) return 'progress-60-90';
+        if (numValue >= 20) return 'progress-20-60';
+        return 'progress-0-20';
+      }
+
+      function updateAffectionBar(characterName, currentRaw, previousRaw) {
+        const progressBar = cacheElement(`${characterName}Progress`);
+        const valueId = `${characterName}Affection`;
+        const valueDisplay = cacheElement(valueId);
+        const deltaId = `${characterName}Delta`;
+
+        const currentNum = toNumberValue(currentRaw);
+        const previousNum = toNumberValue(previousRaw);
+
+        if (valueDisplay) {
+          if (Number.isFinite(currentNum)) {
+            valueDisplay.textContent = formatNumeric(currentNum);
+          } else {
+            valueDisplay.textContent = String(currentRaw ?? '0');
+          }
+        }
+
+        setDeltaBadge(deltaId, currentNum, previousNum);
+        flashValue(valueId, currentNum, previousNum);
+
+        if (progressBar) {
+          const safeNum = Number.isFinite(currentNum) ? currentNum : 0;
+          progressBar.style.width = `${Math.max(0, Math.min(100, safeNum))}%`;
+          progressBar.className = `progress-fill ${getAffectionClass(safeNum)}`;
+        }
+      }
+
+      async function getStatDataByMessageId(messageId) {
+        try {
+          const messages = await getChatMessages(messageId);
+          if (!messages || messages.length === 0 || !messages[0] || !messages[0].data) {
+            return null;
+          }
+          return messages[0].data.stat_data || null;
+        } catch (error) {
+          return null;
+        }
+      }
+
+      function loadPreferences() {
+        const savedTheme = localStorage.getItem(UNIFIED_THEME_KEY);
+        applyTheme(savedTheme);
+
+        const cultivationCollapsed = localStorage.getItem('section-cultivation') === 'true';
+        if (cultivationCollapsed) {
+          cacheElement('cultivation-content').classList.add('collapsed');
+          cacheElement('cultivation-toggle').classList.add('collapsed');
+        }
+
+        const companionsCollapsed = localStorage.getItem('section-companions') === 'true';
+        if (companionsCollapsed) {
+          cacheElement('companions-content').classList.add('collapsed');
+          cacheElement('companions-toggle').classList.add('collapsed');
+        }
+      }
+
+      function renderStatus(characterData, prevData) {
+        const worldDate = cacheElement('worldDate');
+        const worldTime = cacheElement('worldTime');
+        if (worldDate) worldDate.textContent = SafeGetValue(characterData, '世界.日期', '37000-03-15');
+        if (worldTime) worldTime.textContent = SafeGetValue(characterData, '世界.时间', '06:00');
+
+        const userRealm = cacheElement('userRealm');
+        if (userRealm) userRealm.textContent = SafeGetValue(characterData, 'user.境界', '凡人');
+
+        const quotaValue = SafeGetValue(characterData, 'user.双修额度', '可用');
+        const quotaElement = cacheElement('userQuota');
+        if (quotaElement) {
+          quotaElement.innerHTML =
+            quotaValue === '可用'
+              ? '<span class="quota-available">可用</span>'
+              : '<span class="quota-used">已用</span>';
+        }
+
+        const realmMap = [
+          { id: 'yuqinghanRealm', path: '虞清寒.境界', fallback: '合体后期' },
+          { id: 'yinmiaoyanRealm', path: '殷妙烟.境界', fallback: '合体前期' },
+          { id: 'qinsushuangRealm', path: '秦素霜.境界', fallback: '化神中期' },
+          { id: 'jiangxiaoliRealm', path: '江小鲤.境界', fallback: '凡人' },
+        ];
+
+        realmMap.forEach(item => {
+          const elem = cacheElement(item.id);
+          if (elem) {
+            elem.textContent = SafeGetValue(characterData, item.path, item.fallback);
+          }
+        });
+
+        updateAffectionBar('yuqinghan', SafeGetValue(characterData, '虞清寒.倾心值', 0), SafeGetValue(prevData, '虞清寒.倾心值', 0));
+        updateAffectionBar('yinmiaoyan', SafeGetValue(characterData, '殷妙烟.倾心值', 0), SafeGetValue(prevData, '殷妙烟.倾心值', 0));
+        updateAffectionBar('qinsushuang', SafeGetValue(characterData, '秦素霜.倾心值', 5), SafeGetValue(prevData, '秦素霜.倾心值', 5));
+        updateAffectionBar('jiangxiaoli', SafeGetValue(characterData, '江小鲤.倾心值', 10), SafeGetValue(prevData, '江小鲤.倾心值', 10));
+
+        const jadeStatus = SafeGetValue(characterData, '江小鲤.玉佩状态', '遮掩真容');
+        const jadeStatusElem = cacheElement('jadeStatus');
+        const jadeIndicator = cacheElement('jadeIndicator');
+
+        if (jadeStatusElem) jadeStatusElem.textContent = jadeStatus;
+        if (jadeIndicator) {
+          jadeIndicator.className = jadeStatus === '遮掩真容' ? 'jade-indicator jade-concealed' : 'jade-indicator jade-revealed';
+        }
+      }
+
+      async function initDisplay(attempt = 0) {
+        try {
+          const currentMessageIdRaw = typeof getCurrentMessageId === 'function' ? getCurrentMessageId() : 0;
+          const currentMessageId = Number.isFinite(Number(currentMessageIdRaw)) ? Math.max(0, Number(currentMessageIdRaw)) : 0;
+
+          const [currentData, prevData] = await Promise.all([
+            getStatDataByMessageId(currentMessageId),
+            currentMessageId > 0 ? getStatDataByMessageId(currentMessageId - 1) : Promise.resolve(null),
+          ]);
+
+          if (!currentData && attempt < 10) {
+            setTimeout(() => initDisplay(attempt + 1), 120);
+            return;
+          }
+
+          renderStatus(currentData || {}, prevData || {});
+        } catch (error) {
+          console.error('初始化显示时出错:', error);
+        }
+      }
+
+      const themeToggleBtn = cacheElement('themeToggle');
+      if (themeToggleBtn) {
+        themeToggleBtn.addEventListener('click', toggleTheme);
+      }
+
+      setTimeout(function () {
+        loadPreferences();
+        initDisplay(0);
+      }, 0);
+    </script>
+  </body>
+</html>
