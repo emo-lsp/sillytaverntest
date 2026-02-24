@@ -603,6 +603,9 @@
         <div class="page" id="page1">
           <div class="page-title">关系类型</div>
           <div class="page-desc">你和她的关系</div>
+          <div style="margin-bottom: 16px;">
+            <input type="text" class="custom-input" id="nameInput" placeholder="给她起个名字（可选，留空则由AI生成）" style="text-align: center;" oninput="selections.name = this.value.trim(); saveData();" />
+          </div>
           <div class="options-grid">
             <div
               class="option-card"
@@ -620,6 +623,36 @@
               <div class="icon">💍</div>
               <div class="label">妻子</div>
               <div class="desc">夫妻关系,已婚状态</div>
+            </div>
+
+            <div
+              class="option-card"
+              onclick="selectRelationshipType('母亲', this)"
+            >
+              <div class="icon">👩‍👦</div>
+              <div class="label">母亲</div>
+              <div class="desc">你的母亲,她与单男发生关系</div>
+            </div>
+
+            <div
+              class="option-card"
+              onclick="selectRelationshipType('女儿', this)"
+            >
+              <div class="icon">👧</div>
+              <div class="label">女儿</div>
+              <div class="desc">你的女儿,她与单男偷情</div>
+            </div>
+
+            <div class="option-card" onclick="selectCustomRelationshipType(this)">
+              <div class="icon">✏️</div>
+              <div class="label">自定义</div>
+              <input
+                type="text"
+                class="custom-input"
+                placeholder="输入自定义关系"
+                onclick="event.stopPropagation()"
+                id="customRelTypeInput"
+              />
             </div>
           </div>
 
@@ -1284,7 +1317,6 @@
               class="btn btn-next"
               id="nextBtn11"
               onclick="nextPage()"
-              disabled
             >
               下一步
             </button>
@@ -1298,6 +1330,11 @@
             <div class="summary-item">
               <span class="summary-label">身份</span>
               <span class="summary-value" id="summaryIdentity">-</span>
+            </div>
+
+            <div class="summary-item" id="summaryNameRow">
+              <span class="summary-label">她的名字</span>
+              <span class="summary-value" id="summaryName">-</span>
             </div>
 
             <div class="summary-item">
@@ -1379,6 +1416,11 @@
             <span class="info-value" id="infoIdentity">-</span>
           </div>
 
+          <div class="info-item" id="infoNameRow">
+            <span class="info-label">她的名字</span>
+            <span class="info-value" id="infoName">-</span>
+          </div>
+
           <div class="info-item">
             <span class="info-label">关系类型</span>
             <span class="info-value" id="infoRelationshipType">-</span>
@@ -1443,6 +1485,7 @@
       const totalPages = 13;
       const selections = {
         identity: "",
+        name: "",
         relationshipType: "",
         body: "",
         personality: "",
@@ -1533,11 +1576,13 @@
           { value: "羞辱受虐", icon: "😔", desc: "享受被单男羞辱、被伴侣嫌弃的屈辱快感" },
           { value: "分享炫耀", icon: "🏆", desc: "享受将伴侣的美好肉体展示给他人" },
           { value: "拍摄记录", icon: "📹", desc: "镜头见证,留下证据" },
+          { value: "不知情", icon: "❔", desc: "没有特别的癖好偏向" },
         ],
         passive: [
           { value: "嫉妒痛苦", icon: "💔", desc: "在痛苦和嫉妒中获得扭曲的快感" },
           { value: "暗中跟踪", icon: "🕵️", desc: "偷偷跟踪伴侣,目睹她与单男的偷情现场" },
           { value: "自我怀疑", icon: "😰", desc: "在伴侣的变化中反复纠结,怀疑自己的魅力" },
+          { value: "不知情", icon: "❔", desc: "对一切毫无察觉,生活如常" },
         ],
       };
 
@@ -1561,6 +1606,8 @@
       function clearAllData() {
         localStorage.removeItem("wifeSelection");
         Object.keys(selections).forEach((key) => (selections[key] = ""));
+        const nameInput = document.getElementById("nameInput");
+        if (nameInput) nameInput.value = "";
         updateBottomInfo();
       }
 
@@ -1632,6 +1679,36 @@
           btn.disabled = false;
         }
 
+        setTimeout(scrollToNavButtons, 100);
+      }
+
+      function selectCustomRelationshipType(element) {
+        const parent = element.parentElement;
+        parent.querySelectorAll(".option-card").forEach((card) => {
+          card.classList.remove("selected");
+        });
+        element.classList.add("selected");
+        const input = element.querySelector(".custom-input");
+        input.focus();
+        const btn = document.getElementById("nextBtn1");
+
+        input.addEventListener("input", function () {
+          const value = this.value.trim();
+          if (value) {
+            selections.relationshipType = value;
+            saveData();
+            if (btn) btn.disabled = false;
+          } else {
+            selections.relationshipType = "";
+            if (btn) btn.disabled = true;
+          }
+        });
+
+        if (input.value.trim()) {
+          selections.relationshipType = input.value.trim();
+          saveData();
+          if (btn) btn.disabled = false;
+        }
         setTimeout(scrollToNavButtons, 100);
       }
 
@@ -1838,11 +1915,6 @@
         `;
 
         grid.innerHTML = html;
-
-        const btn = document.getElementById("nextBtn11");
-        if (btn) {
-          btn.disabled = !selections.myKink;
-        }
       }
 
       function updateSummary() {
@@ -1850,6 +1922,17 @@
 
         document.getElementById("summaryIdentity").textContent =
           selections.identity || "-";
+
+        const nameRow = document.getElementById("summaryNameRow");
+        if (nameRow) {
+          if (selections.name) {
+            nameRow.classList.remove("hidden");
+            document.getElementById("summaryName").textContent = selections.name;
+          } else {
+            nameRow.classList.add("hidden");
+          }
+        }
+
         document.getElementById("summaryRelationshipType").textContent =
           selections.relationshipType || "-";
         document.getElementById("summaryBody").textContent =
@@ -1899,6 +1982,17 @@
 
         document.getElementById("infoIdentity").textContent =
           selections.identity || "-";
+
+        const infoNameRow = document.getElementById("infoNameRow");
+        if (infoNameRow) {
+          if (selections.name) {
+            infoNameRow.classList.remove("hidden");
+            document.getElementById("infoName").textContent = selections.name;
+          } else {
+            infoNameRow.classList.add("hidden");
+          }
+        }
+
         document.getElementById("infoRelationshipType").textContent =
           selections.relationshipType || "-";
         document.getElementById("infoBody").textContent =
@@ -1949,11 +2043,15 @@
           "开始游戏",
           "准备生成内容...<br><br>建议在AI生成完毕后，手动刷新网页以隐藏首楼",
           function () {
+            const namePart = selections.name ? `她叫${selections.name},` : "";
+            const myKinkPart = selections.myKink
+              ? (passive ? `,我的心理状态是${selections.myKink}` : `,我的性癖是${selections.myKink}`)
+              : "";
             let message;
             if (passive) {
-              message = `【开始选择】我的身份是${selections.identity}。她是我的${selections.relationshipType},${selections.body}、${selections.personality}、年龄在${selections.age}、职业是${selections.career},我和她的关系设定是${selections.relation}。她出轨的原因是${selections.lifeStatus},她的过往经历是${selections.pastExperience},我的状态是${selections.maleSetting}。她的性癖是${selections.herKink},我的心理状态是${selections.myKink}。严格按照<status_current_variables>中的等级和<wife_forum_glossary>的内容进行创作并生成约炮帖。`;
+              message = `【开始选择】我的身份是${selections.identity}。${namePart}她是我的${selections.relationshipType},${selections.body}、${selections.personality}、年龄在${selections.age}、职业是${selections.career},我和她的关系设定是${selections.relation}。她出轨的原因是${selections.lifeStatus},她的过往经历是${selections.pastExperience},我的状态是${selections.maleSetting}。她的性癖是${selections.herKink}${myKinkPart}。严格按照<status_current_variables>中的等级和<wife_forum_glossary>的内容进行创作并生成约炮帖。`;
             } else {
-              message = `【开始选择】我的身份是${selections.identity}。她是我的${selections.relationshipType},${selections.body}、${selections.personality}、年龄在${selections.age}、职业是${selections.career},我和她的关系设定是${selections.relation}。我们进入淫妻圈的原因是${selections.lifeStatus},她的过往经历是${selections.pastExperience},我在淫妻活动中的角色是${selections.maleSetting}。她的性癖是${selections.herKink},我的性癖是${selections.myKink}。严格按照<status_current_variables>中的等级和<wife_forum_glossary>的内容进行创作并生成约炮帖。`;
+              message = `【开始选择】我的身份是${selections.identity}。${namePart}她是我的${selections.relationshipType},${selections.body}、${selections.personality}、年龄在${selections.age}、职业是${selections.career},我和她的关系设定是${selections.relation}。我们进入淫妻圈的原因是${selections.lifeStatus},她的过往经历是${selections.pastExperience},我在淫妻活动中的角色是${selections.maleSetting}。她的性癖是${selections.herKink}${myKinkPart}。严格按照<status_current_variables>中的等级和<wife_forum_glossary>的内容进行创作并生成约炮帖。`;
             }
             const command = `/send ${message} | /trigger`;
             if (typeof triggerSlash === "function") {
@@ -2032,7 +2130,7 @@
       function randomSelection() {
         const options = {
           identity: ["夫妻共同探索", "NTRS献妻者", "被NTR苦主", "女单"],
-          relationshipType: ["女朋友", "妻子"],
+          relationshipType: ["女朋友", "妻子", "母亲", "女儿"],
           body: ["丰满御姐", "纤细少妇", "微胖人妻", "健美辣妈", "娇小玲珑"],
           personality: [
             "温柔贤惠",
@@ -2188,8 +2286,13 @@
           if (e.key === "Enter") {
             e.preventDefault();
             const category = this.getAttribute("data-category");
-            if (this.value.trim()) {
+            if (category && this.value.trim()) {
               selections[category] = this.value.trim();
+              saveData();
+              nextPage();
+            }
+            if (this.id === "customRelTypeInput" && this.value.trim()) {
+              selections.relationshipType = this.value.trim();
               saveData();
               nextPage();
             }
