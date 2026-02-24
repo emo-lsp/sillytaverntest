@@ -1,0 +1,717 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>单男详情 - 妻悦论坛</title>
+    <link rel="stylesheet" href="https://fontsapi.zeoseven.com/292/main/result.css" />
+  </head>
+
+  <body>
+    <style>
+      :root {
+        --dark-red: #c92a2a;
+        --blood-red: #e03131;
+        --light-red: #ff6b6b;
+        --dark-gray: #1a1a1a;
+        --gray: #2a2a2a;
+        --light-gray: #3a3a3a;
+        --text-main: #e0e0e0;
+        --text-dim: #999;
+        --text-dimmer: #666;
+        --gold: #ffd700;
+        --border: rgba(220, 20, 60, 0.2);
+        --hover-bg: rgba(220, 20, 60, 0.08);
+      }
+
+      [data-theme='light'] {
+        --dark-red: #c92a2a;
+        --blood-red: #e03131;
+        --light-red: #ff6b6b;
+        --dark-gray: #f5f5f5;
+        --gray: #ececec;
+        --light-gray: #e0e0e0;
+        --text-main: #2a2a2a;
+        --text-dim: #666;
+        --text-dimmer: #999;
+        --gold: #d97706;
+        --border: rgba(220, 20, 60, 0.15);
+        --hover-bg: rgba(220, 20, 60, 0.05);
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family:
+          'Noto Sans SC',
+          -apple-system,
+          BlinkMacSystemFont,
+          'Segoe UI',
+          sans-serif;
+        color: var(--text-main);
+        line-height: 1.6;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+      }
+
+      .profile-container {
+        width: 100%;
+        max-width: 820px;
+        margin: 0 auto;
+        background: var(--dark-gray);
+        font-size: var(--base-font-size, 14px);
+      }
+
+      .profile-container.font-medium {
+        --base-font-size: 16px;
+      }
+
+      .profile-container.font-large {
+        --base-font-size: 18px;
+      }
+
+      .profile-container.font-xlarge {
+        --base-font-size: 20px;
+      }
+
+      .profile-header {
+        background: var(--blood-red);
+        padding: 10px 16px;
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        border-bottom: 1px solid var(--border);
+      }
+
+      .header-content {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 12px;
+      }
+
+      .back-button {
+        background: rgba(255, 255, 255, 0.2);
+        border: none;
+        color: #fff;
+        padding: 6px 12px;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: background 0.2s;
+        font-size: 0.85em;
+        font-weight: 500;
+        outline: none;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+      }
+
+      .back-button:hover {
+        background: rgba(255, 255, 255, 0.3);
+      }
+
+      .profile-title-header {
+        font-size: 1em;
+        font-weight: 600;
+        color: #fff;
+        flex: 1;
+      }
+
+      .theme-toggle {
+        background: rgba(255, 255, 255, 0.2);
+        border: none;
+        color: #fff;
+        padding: 6px 12px;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: background 0.2s;
+        font-size: 0.85em;
+        font-weight: 500;
+        outline: none;
+      }
+
+      .theme-toggle:hover {
+        background: rgba(255, 255, 255, 0.3);
+      }
+
+      .profile-card {
+        background: var(--gray);
+        padding: 20px;
+        border-bottom: 1px solid var(--border);
+      }
+
+      .profile-name {
+        font-size: 1.5em;
+        font-weight: 700;
+        color: var(--text-main);
+        margin-bottom: 12px;
+      }
+
+      .profile-badges {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        margin-bottom: 16px;
+      }
+
+      .badge {
+        padding: 4px 12px;
+        border-radius: 4px;
+        font-size: 0.85em;
+        font-weight: 600;
+      }
+
+      .badge-level {
+        background: var(--blood-red);
+        color: #fff;
+      }
+
+      .badge-location {
+        background: var(--light-gray);
+        color: var(--text-dim);
+      }
+
+      .badge-rating {
+        background: var(--gold);
+        color: #1a1a1a;
+      }
+
+      .profile-stats {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+        gap: 16px;
+        padding: 16px;
+        background: var(--light-gray);
+        border-radius: 6px;
+      }
+
+      .stat-box {
+        text-align: center;
+      }
+
+      .stat-value {
+        font-size: 1.3em;
+        font-weight: 700;
+        color: var(--gold);
+        margin-bottom: 4px;
+      }
+
+      .stat-label {
+        font-size: 0.8em;
+        color: var(--text-dim);
+      }
+
+      .profile-section {
+        background: var(--gray);
+        padding: 16px;
+        border-bottom: 1px solid var(--border);
+      }
+
+      .section-title {
+        font-size: 1.1em;
+        font-weight: 600;
+        color: var(--blood-red);
+        margin-bottom: 12px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+
+      .section-content {
+        color: var(--text-main);
+        font-size: 0.95em;
+        line-height: 1.8;
+      }
+
+      .section-content p {
+        margin-bottom: 10px;
+      }
+
+      .info-grid {
+        display: grid;
+        gap: 12px;
+      }
+
+      .info-item {
+        display: flex;
+        padding: 10px;
+        background: var(--light-gray);
+        border-radius: 4px;
+      }
+
+      .info-label {
+        min-width: 80px;
+        color: var(--text-dim);
+        font-size: 0.9em;
+      }
+
+      .info-value {
+        color: var(--text-main);
+        font-size: 0.9em;
+        flex: 1;
+      }
+
+      .skill-tags {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
+
+      .skill-tag {
+        padding: 4px 10px;
+        background: var(--blood-red);
+        color: #fff;
+        border-radius: 4px;
+        font-size: 0.82em;
+      }
+
+      .reviews-section {
+        background: var(--dark-gray);
+      }
+
+      .reviews-header {
+        background: var(--gray);
+        padding: 12px 16px;
+        border-bottom: 1px solid var(--border);
+        font-size: 0.95em;
+        font-weight: 600;
+        color: var(--blood-red);
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+
+      .review-item {
+        padding: 16px;
+        border-bottom: 1px solid var(--border);
+        background: var(--gray);
+      }
+
+      .review-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 10px;
+      }
+
+      .review-author {
+        font-weight: 600;
+        color: var(--text-main);
+        font-size: 0.95em;
+      }
+
+      .review-rating {
+        color: var(--gold);
+        font-size: 0.9em;
+        font-weight: 600;
+      }
+
+      .review-time {
+        color: var(--text-dim);
+        font-size: 0.82em;
+        margin-top: 4px;
+      }
+
+      .review-content {
+        color: var(--text-main);
+        font-size: 0.95em;
+        line-height: 1.6;
+      }
+
+      @media (max-width: 768px) {
+        .profile-container {
+          font-size: var(--base-font-size, 13px);
+        }
+
+        .profile-container.font-medium {
+          --base-font-size: 15px;
+        }
+
+        .profile-container.font-large {
+          --base-font-size: 17px;
+        }
+
+        .profile-container.font-xlarge {
+          --base-font-size: 19px;
+        }
+
+        .profile-stats {
+          grid-template-columns: repeat(2, 1fr);
+        }
+      }
+
+      ::-webkit-scrollbar {
+        width: 6px;
+        height: 6px;
+      }
+
+      ::-webkit-scrollbar-track {
+        background: transparent;
+      }
+
+      ::-webkit-scrollbar-thumb {
+        background: rgba(220, 20, 60, 0.3);
+        border-radius: 3px;
+      }
+
+      ::-webkit-scrollbar-thumb:hover {
+        background: rgba(220, 20, 60, 0.5);
+      }
+
+      * {
+        -webkit-tap-highlight-color: transparent;
+      }
+
+      .loading {
+        text-align: center;
+        padding: 50px;
+        color: var(--text-dim);
+        font-size: 1.1em;
+      }
+    </style>
+
+    <div class="profile-container" id="profile-container">
+      <div class="loading">界面加载失败,请重roll聊天试试...</div>
+    </div>
+
+    <script>
+      const chat_message = getChatMessages(getCurrentMessageId())[0];
+      const match = chat_message.message.match(/<profile_data>([\s\S]*?)<\/profile_data>/);
+      const profileDataXML = match ? match[0] : '<profile_data></profile_data>';
+
+      function parseProfileDataXML(xmlText) {
+        console.log('========== 单男数据解析开始 ==========');
+        console.log('XML数据长度:', xmlText.length);
+
+        const data = {
+          name: '',
+          level: '',
+          location: '',
+          rating: '',
+          serviceCount: '',
+          experience: '',
+          age: '',
+          height: '',
+          size: '',
+          skills: [],
+          introduction: '',
+          reviews: [],
+        };
+
+        try {
+          const nameMatch = xmlText.match(/\[昵称\|([^\]]+)\]/);
+          if (nameMatch) data.name = nameMatch[1];
+
+          const levelMatch = xmlText.match(/\[等级\|([^\]]+)\]/);
+          if (levelMatch) data.level = levelMatch[1];
+
+          const locationMatch = xmlText.match(/\[地区\|([^\]]+)\]/);
+          if (locationMatch) data.location = locationMatch[1];
+
+          const ratingMatch = xmlText.match(/\[评分\|([^\]]+)\]/);
+          if (ratingMatch) data.rating = ratingMatch[1];
+
+          const serviceCountMatch = xmlText.match(/\[服务次数\|([^\]]+)\]/);
+          if (serviceCountMatch) data.serviceCount = serviceCountMatch[1];
+
+          const experienceMatch = xmlText.match(/\[入圈时间\|([^\]]+)\]/);
+          if (experienceMatch) data.experience = experienceMatch[1];
+
+          const ageMatch = xmlText.match(/\[年龄\|([^\]]+)\]/);
+          if (ageMatch) data.age = ageMatch[1];
+
+          const heightMatch = xmlText.match(/\[身高\|([^\]]+)\]/);
+          if (heightMatch) data.height = heightMatch[1];
+
+          const sizeMatch = xmlText.match(/\[肉棒尺寸\|([^\]]+)\]/);
+          if (sizeMatch) data.size = sizeMatch[1];
+
+          const introductionMatch = xmlText.match(/\[自我介绍\|([^\]]+)\]/);
+          if (introductionMatch) data.introduction = introductionMatch[1];
+
+          const skillsMatch = xmlText.match(/<skills>([\s\S]*?)<\/skills>/i);
+          if (skillsMatch && skillsMatch[1]) {
+            const skillRegex = /\[技能\|([^\]]+)\]/g;
+            let skillMatch;
+            while ((skillMatch = skillRegex.exec(skillsMatch[1])) !== null) {
+              data.skills.push(skillMatch[1]);
+            }
+          }
+
+          const reviewsMatch = xmlText.match(/<reviews>([\s\S]*?)<\/reviews>/i);
+          if (reviewsMatch && reviewsMatch[1]) {
+            const reviewRegex = /\[评价\|([^\|]+)\|([^\|]+)\|([^\|]+)\|([^\]]+)\]/g;
+            let reviewMatch;
+            while ((reviewMatch = reviewRegex.exec(reviewsMatch[1])) !== null) {
+              data.reviews.push({
+                author: reviewMatch[1],
+                rating: reviewMatch[2],
+                time: reviewMatch[3],
+                content: reviewMatch[4],
+              });
+            }
+          }
+
+          console.log('解析完成 - 技能:', data.skills.length, '评价:', data.reviews.length);
+          console.log('========== 单男数据解析完成 ==========');
+          return data;
+        } catch (error) {
+          console.error('解析单男数据出错:', error);
+          return data;
+        }
+      }
+
+      function renderProfile(data) {
+        console.log('开始渲染单男资料...');
+
+        const container = document.getElementById('profile-container');
+
+        if (!data.name) {
+          container.innerHTML = '<div class="loading">界面加载失败,应该是掉格式了,请重roll聊天试试...</div>';
+          return;
+        }
+
+        let skillsHTML = '';
+        data.skills.forEach(skill => {
+          skillsHTML += `<span class="skill-tag">${skill}</span>`;
+        });
+
+        let reviewsHTML = '';
+        data.reviews.forEach(review => {
+          reviewsHTML += `
+            <div class="review-item">
+              <div class="review-header">
+                <div>
+                  <div class="review-author">👤 ${review.author}</div>
+                  <div class="review-time">🕒 ${review.time}</div>
+                </div>
+                <div class="review-rating">⭐ ${review.rating} 分</div>
+              </div>
+              <div class="review-content">${review.content}</div>
+            </div>
+          `;
+        });
+
+        container.innerHTML = `
+          <header class="profile-header">
+            <div class="header-content">
+              <button class="back-button" onclick="goBack()">
+                ← 返回
+              </button>
+              <div class="profile-title-header">单男资料</div>
+              <button class="theme-toggle" onclick="cycleFontSize()">
+                <span id="font-size-icon">A</span>
+              </button>
+              <button class="theme-toggle" onclick="toggleTheme()">
+                <span id="theme-icon">🌙</span>
+              </button>
+            </div>
+          </header>
+
+          <div class="profile-card">
+            <div class="profile-name">👨 ${data.name}</div>
+            <div class="profile-badges">
+              <span class="badge badge-level">Lv.${data.level}</span>
+              <span class="badge badge-location">📍 ${data.location}</span>
+              <span class="badge badge-rating">⭐ ${data.rating} 分</span>
+            </div>
+            <div class="profile-stats">
+              <div class="stat-box">
+                <div class="stat-value">${data.serviceCount}</div>
+                <div class="stat-label">服务次数</div>
+              </div>
+              <div class="stat-box">
+                <div class="stat-value">${data.experience}</div>
+                <div class="stat-label">入圈时间</div>
+              </div>
+              <div class="stat-box">
+                <div class="stat-value">${data.level}</div>
+                <div class="stat-label">当前等级</div>
+              </div>
+              <div class="stat-box">
+                <div class="stat-value">${data.reviews.length}</div>
+                <div class="stat-label">评价数量</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="profile-section">
+            <div class="section-title">
+              <span>📋</span>
+              <span>基本信息</span>
+            </div>
+            <div class="info-grid">
+              <div class="info-item">
+                <span class="info-label">年龄</span>
+                <span class="info-value">${data.age}</span>
+              </div>
+              <div class="info-item">
+                <span class="info-label">身高</span>
+                <span class="info-value">${data.height}</span>
+              </div>
+              <div class="info-item">
+                <span class="info-label">肉棒尺寸</span>
+                <span class="info-value">${data.size}</span>
+              </div>
+              <div class="info-item">
+                <span class="info-label">活动地区</span>
+                <span class="info-value">${data.location}</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="profile-section">
+            <div class="section-title">
+              <span>💪</span>
+              <span>擅长技能</span>
+            </div>
+            <div class="skill-tags">
+              ${skillsHTML || '<span class="info-value">暂无标签</span>'}
+            </div>
+          </div>
+
+          <div class="profile-section">
+            <div class="section-title">
+              <span>✍️</span>
+              <span>自我介绍</span>
+            </div>
+            <div class="section-content">
+              ${data.introduction
+                .split(/\\n|\n/)
+                .filter(p => p.trim())
+                .map(p => `<p>${p}</p>`)
+                .join('')}
+            </div>
+          </div>
+
+          <div class="reviews-section">
+            <div class="reviews-header">
+              <span>⭐</span>
+              <span>夫妻评价 (${data.reviews.length})</span>
+            </div>
+            ${reviewsHTML || '<div class="loading">暂无评价</div>'}
+          </div>
+        `;
+
+        console.log('单男资料渲染完成');
+      }
+
+      function cycleFontSize() {
+        const container = document.getElementById('profile-container');
+        const icon = document.getElementById('font-size-icon');
+        const fontSizes = ['small', 'medium', 'large', 'xlarge'];
+        const fontIcons = ['A', 'A+', 'A++', 'A+++'];
+
+        let currentSize = localStorage.getItem('forum-font-size') || 'small';
+        let currentIndex = fontSizes.indexOf(currentSize);
+        let nextIndex = (currentIndex + 1) % fontSizes.length;
+        let nextSize = fontSizes[nextIndex];
+
+        container.classList.remove('font-medium', 'font-large', 'font-xlarge');
+        if (nextSize !== 'small') {
+          container.classList.add('font-' + nextSize);
+        }
+
+        icon.textContent = fontIcons[nextIndex];
+        localStorage.setItem('forum-font-size', nextSize);
+      }
+
+      function toggleTheme() {
+        const body = document.body;
+        const icon = document.getElementById('theme-icon');
+        const isLight = body.getAttribute('data-theme') === 'light';
+
+        if (isLight) {
+          body.removeAttribute('data-theme');
+          icon.textContent = '🌙';
+          localStorage.setItem('forum-theme', 'dark');
+        } else {
+          body.setAttribute('data-theme', 'light');
+          icon.textContent = '☀️';
+          localStorage.setItem('forum-theme', 'light');
+        }
+      }
+
+      function syncThemeFromStorage(e) {
+        if (e.key === 'forum-theme') {
+          const body = document.body;
+          const icon = document.getElementById('theme-icon');
+
+          if (e.newValue === 'light') {
+            body.setAttribute('data-theme', 'light');
+            if (icon) icon.textContent = '☀️';
+          } else {
+            body.removeAttribute('data-theme');
+            if (icon) icon.textContent = '🌙';
+          }
+        }
+
+        if (e.key === 'forum-font-size') {
+          const container = document.getElementById('profile-container');
+          const icon = document.getElementById('font-size-icon');
+          const fontSizes = ['small', 'medium', 'large', 'xlarge'];
+          const fontIcons = ['A', 'A+', 'A++', 'A+++'];
+
+          container.classList.remove('font-medium', 'font-large', 'font-xlarge');
+          if (e.newValue && e.newValue !== 'small') {
+            container.classList.add('font-' + e.newValue);
+          }
+
+          let index = fontSizes.indexOf(e.newValue || 'small');
+          if (icon) icon.textContent = fontIcons[index];
+        }
+      }
+
+      function goBack() {
+        const cmd = `/send 返回论坛 | /trigger`;
+        if (typeof triggerSlash === 'function') {
+          triggerSlash(cmd);
+        }
+      }
+
+      window.addEventListener('storage', syncThemeFromStorage);
+
+      setTimeout(function () {
+        const theme = localStorage.getItem('forum-theme');
+        if (theme === 'light') {
+          document.body.setAttribute('data-theme', 'light');
+        }
+
+        console.log('页面加载完成,开始解析单男数据');
+        try {
+          const data = parseProfileDataXML(profileDataXML);
+          renderProfile(data);
+
+          if (theme === 'light') {
+            const icon = document.getElementById('theme-icon');
+            if (icon) {
+              icon.textContent = '☀️';
+            }
+          }
+
+          const fontSize = localStorage.getItem('forum-font-size') || 'small';
+          const container = document.getElementById('profile-container');
+          const fontIcon = document.getElementById('font-size-icon');
+          const fontSizes = ['small', 'medium', 'large', 'xlarge'];
+          const fontIcons = ['A', 'A+', 'A++', 'A+++'];
+
+          if (fontSize !== 'small') {
+            container.classList.add('font-' + fontSize);
+          }
+
+          let index = fontSizes.indexOf(fontSize);
+          if (fontIcon) {
+            fontIcon.textContent = fontIcons[index];
+          }
+        } catch (error) {
+          console.error('渲染失败:', error);
+          document.getElementById('profile-container').innerHTML = '<div class="loading">数据加载失败,请刷新重试</div>';
+        }
+      }, 0);
+    </script>
+  </body>
+</html>

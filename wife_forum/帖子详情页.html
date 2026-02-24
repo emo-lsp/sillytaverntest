@@ -1,0 +1,810 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>帖子详情 - 妻悦论坛</title>
+    <link rel="stylesheet" href="https://fontsapi.zeoseven.com/292/main/result.css" />
+  </head>
+
+  <body>
+    <style>
+      :root {
+        --dark-red: #c92a2a;
+        --blood-red: #e03131;
+        --light-red: #ff6b6b;
+        --dark-gray: #1a1a1a;
+        --gray: #2a2a2a;
+        --light-gray: #3a3a3a;
+        --text-main: #e0e0e0;
+        --text-dim: #999;
+        --text-dimmer: #666;
+        --gold: #ffd700;
+        --border: rgba(220, 20, 60, 0.2);
+        --hover-bg: rgba(220, 20, 60, 0.08);
+      }
+
+      [data-theme='light'] {
+        --dark-red: #c92a2a;
+        --blood-red: #e03131;
+        --light-red: #ff6b6b;
+        --dark-gray: #f5f5f5;
+        --gray: #ececec;
+        --light-gray: #e0e0e0;
+        --text-main: #2a2a2a;
+        --text-dim: #666;
+        --text-dimmer: #999;
+        --gold: #d97706;
+        --border: rgba(220, 20, 60, 0.15);
+        --hover-bg: rgba(220, 20, 60, 0.05);
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family:
+          'Noto Sans SC',
+          -apple-system,
+          BlinkMacSystemFont,
+          'Segoe UI',
+          sans-serif;
+        color: var(--text-main);
+        line-height: 1.6;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+      }
+
+      .post-container {
+        width: 100%;
+        max-width: 820px;
+        margin: 0 auto;
+        background: var(--dark-gray);
+        font-size: var(--base-font-size, 14px);
+      }
+
+      .post-container.font-medium {
+        --base-font-size: 16px;
+      }
+
+      .post-container.font-large {
+        --base-font-size: 18px;
+      }
+
+      .post-container.font-xlarge {
+        --base-font-size: 20px;
+      }
+
+      .post-header {
+        background: var(--blood-red);
+        padding: 10px 16px;
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        border-bottom: 1px solid var(--border);
+      }
+
+      .header-content {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 12px;
+      }
+
+      .back-button {
+        background: rgba(255, 255, 255, 0.2);
+        border: none;
+        color: #fff;
+        padding: 6px 12px;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: background 0.2s;
+        font-size: 0.85em;
+        font-weight: 500;
+        outline: none;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+      }
+
+      .back-button:hover {
+        background: rgba(255, 255, 255, 0.3);
+      }
+
+      .post-title-header {
+        font-size: 1em;
+        font-weight: 600;
+        color: #fff;
+        flex: 1;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .theme-toggle {
+        background: rgba(255, 255, 255, 0.2);
+        border: none;
+        color: #fff;
+        padding: 6px 12px;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: background 0.2s;
+        font-size: 0.85em;
+        font-weight: 500;
+        outline: none;
+      }
+
+      .theme-toggle:hover {
+        background: rgba(255, 255, 255, 0.3);
+      }
+
+      .post-main {
+        background: var(--gray);
+        padding: 16px;
+        border-bottom: 1px solid var(--border);
+      }
+
+      .post-title-full {
+        font-size: 1.3em;
+        font-weight: 600;
+        color: var(--text-main);
+        margin-bottom: 12px;
+        line-height: 1.4;
+      }
+
+      .post-meta-info {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        color: var(--text-dim);
+        font-size: 0.85em;
+        margin-bottom: 16px;
+        padding-bottom: 12px;
+        border-bottom: 1px solid var(--border);
+      }
+
+      .meta-item {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+      }
+
+      .post-author-name {
+        color: var(--gold);
+        font-weight: 600;
+      }
+
+      .post-content-main {
+        color: var(--text-main);
+        font-size: 1em;
+        line-height: 1.8;
+        margin-bottom: 16px;
+      }
+
+      .post-content-main p {
+        margin-bottom: 12px;
+      }
+
+      .post-images {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-bottom: 16px;
+      }
+
+      .post-image-wrapper {
+        position: relative;
+        width: 160px;
+        height: 160px;
+        border-radius: 4px;
+        overflow: hidden;
+        cursor: pointer;
+        border: 2px solid var(--border);
+        transition: all 0.2s;
+      }
+
+      .post-image {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.2s;
+      }
+
+      .post-image-wrapper:hover {
+        border-color: var(--blood-red);
+        transform: translateY(-2px);
+      }
+
+      .post-image-wrapper:hover .post-image {
+        transform: scale(1.1);
+      }
+
+      .post-image.nsfw-blur {
+        filter: blur(15px);
+      }
+
+      .post-image-wrapper:hover .nsfw-blur {
+        filter: blur(8px);
+      }
+
+      .nsfw-badge {
+        position: absolute;
+        top: 8px;
+        right: 8px;
+        background: var(--blood-red);
+        color: #fff;
+        padding: 4px 8px;
+        border-radius: 4px;
+        font-size: 0.75em;
+        font-weight: 600;
+        pointer-events: none;
+      }
+
+      .post-stats-bar {
+        display: flex;
+        gap: 16px;
+        padding: 12px;
+        background: var(--light-gray);
+        border-radius: 6px;
+        font-size: 0.9em;
+        color: var(--text-dim);
+      }
+
+      .stat-item {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+      }
+
+      .replies-section {
+        background: var(--dark-gray);
+      }
+
+      .replies-header {
+        background: var(--gray);
+        padding: 12px 16px;
+        border-bottom: 1px solid var(--border);
+        font-size: 0.95em;
+        font-weight: 600;
+        color: var(--blood-red);
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+
+      .reply-item {
+        padding: 16px;
+        border-bottom: 1px solid var(--border);
+        background: var(--gray);
+      }
+
+      .reply-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 10px;
+      }
+
+      .reply-author {
+        font-weight: 600;
+        color: var(--text-main);
+        font-size: 0.95em;
+      }
+
+      .reply-time {
+        color: var(--text-dim);
+        font-size: 0.82em;
+      }
+
+      .reply-content {
+        color: var(--text-main);
+        font-size: 0.95em;
+        line-height: 1.6;
+      }
+
+      .reply-floor {
+        display: inline-block;
+        background: var(--light-gray);
+        color: var(--text-dim);
+        padding: 2px 8px;
+        border-radius: 3px;
+        font-size: 0.75em;
+        margin-left: 8px;
+      }
+
+      .lightbox {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background: rgba(0, 0, 0, 0.95);
+        z-index: 1000;
+        justify-content: center;
+        align-items: center;
+        cursor: pointer;
+      }
+
+      .lightbox.active {
+        display: flex;
+      }
+
+      .lightbox-image {
+        max-width: 70%;
+        max-height: 70%;
+        object-fit: contain;
+        border-radius: 12px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+        opacity: 0;
+        transform: scale(0.9);
+        transition:
+          opacity 0.3s ease,
+          transform 0.3s ease;
+      }
+
+      .lightbox-image.loaded {
+        opacity: 1;
+        transform: scale(1);
+      }
+
+      .lightbox-loader {
+        position: absolute;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 20px;
+      }
+
+      .lightbox-loader.hidden {
+        display: none;
+      }
+
+      .lightbox-spinner {
+        width: 50px;
+        height: 50px;
+        border: 4px solid rgba(255, 255, 255, 0.2);
+        border-top-color: var(--blood-red);
+        border-radius: 50%;
+        animation: spin 0.8s linear infinite;
+      }
+
+      .lightbox-loader-text {
+        color: rgba(255, 255, 255, 0.8);
+        font-size: 0.9em;
+      }
+
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+
+      @media (max-width: 768px) {
+        .post-container {
+          font-size: var(--base-font-size, 13px);
+        }
+
+        .post-container.font-medium {
+          --base-font-size: 15px;
+        }
+
+        .post-container.font-large {
+          --base-font-size: 17px;
+        }
+
+        .post-container.font-xlarge {
+          --base-font-size: 19px;
+        }
+
+        .post-image-wrapper {
+          width: 120px;
+          height: 120px;
+        }
+      }
+
+      ::-webkit-scrollbar {
+        width: 6px;
+        height: 6px;
+      }
+
+      ::-webkit-scrollbar-track {
+        background: transparent;
+      }
+
+      ::-webkit-scrollbar-thumb {
+        background: rgba(220, 20, 60, 0.3);
+        border-radius: 3px;
+      }
+
+      ::-webkit-scrollbar-thumb:hover {
+        background: rgba(220, 20, 60, 0.5);
+      }
+
+      * {
+        -webkit-tap-highlight-color: transparent;
+      }
+
+      .loading {
+        text-align: center;
+        padding: 50px;
+        color: var(--text-dim);
+        font-size: 1.1em;
+      }
+    </style>
+
+    <div class="post-container" id="post-container">
+      <div class="loading">界面加载失败,请重roll聊天试试...</div>
+    </div>
+
+    <div class="lightbox" id="lightbox" onclick="closeLightbox()">
+      <div class="lightbox-loader" id="lightbox-loader">
+        <div class="lightbox-spinner"></div>
+        <div class="lightbox-loader-text">加载图片中...</div>
+      </div>
+      <img class="lightbox-image" id="lightbox-image" src="" alt="" />
+    </div>
+
+    <script>
+      const chat_message = getChatMessages(getCurrentMessageId())[0];
+      const match = chat_message.message.match(/<post_data>([\s\S]*?)<\/post_data>/);
+      const postDataXML = match ? match[0] : '<post_data></post_data>';
+      const IMAGE_BASE_URL = 'https://gitgud.io/opus5/wife_forum/-/raw/master/';
+
+      function parsePostDataXML(xmlText) {
+        console.log('========== 帖子数据解析开始 ==========');
+        console.log('XML数据长度:', xmlText.length);
+
+        const data = {
+          title: '',
+          author: '',
+          time: '',
+          section: '',
+          views: '',
+          replies: '',
+          content: '',
+          images: [],
+          replyList: [],
+        };
+
+        try {
+          const titleMatch = xmlText.match(/\[标题\|([^\]]+)\]/);
+          if (titleMatch) data.title = titleMatch[1];
+
+          const authorMatch = xmlText.match(/\[作者\|([^\]]+)\]/);
+          if (authorMatch) data.author = authorMatch[1];
+
+          const timeMatch = xmlText.match(/\[时间\|([^\]]+)\]/);
+          if (timeMatch) data.time = timeMatch[1];
+
+          const sectionMatch = xmlText.match(/\[板块\|([^\]]+)\]/);
+          if (sectionMatch) data.section = sectionMatch[1];
+
+          const viewsMatch = xmlText.match(/\[浏览数\|([^\]]+)\]/);
+          if (viewsMatch) data.views = viewsMatch[1];
+
+          const repliesMatch = xmlText.match(/\[回复数\|([^\]]+)\]/);
+          if (repliesMatch) data.replies = repliesMatch[1];
+
+          const contentMatch = xmlText.match(/\[内容\|([^\]]+)\]/);
+          if (contentMatch) data.content = contentMatch[1];
+
+          const imagesMatch = xmlText.match(/<images>([\s\S]*?)<\/images>/i);
+          if (imagesMatch && imagesMatch[1]) {
+            const imageRegex = /\[图片\|([^\|]*)\|([^\]]+)\]/g;
+            let imageMatch;
+            while ((imageMatch = imageRegex.exec(imagesMatch[1])) !== null) {
+              const imageUrl = imageMatch[1] ? IMAGE_BASE_URL + imageMatch[1] : '';
+              if (imageUrl) {
+                data.images.push({
+                  url: imageUrl,
+                  nsfw: imageMatch[2] === 'true',
+                });
+              }
+            }
+          }
+
+          const repliesListMatch = xmlText.match(/<replies>([\s\S]*?)<\/replies>/i);
+          if (repliesListMatch && repliesListMatch[1]) {
+            const replyRegex = /\[回复\|([^\|]+)\|([^\|]+)\|([^\]]+)\]/g;
+            let replyMatch;
+            while ((replyMatch = replyRegex.exec(repliesListMatch[1])) !== null) {
+              data.replyList.push({
+                author: replyMatch[1],
+                time: replyMatch[2],
+                content: replyMatch[3],
+              });
+            }
+          }
+
+          console.log('解析完成 - 图片:', data.images.length, '回复:', data.replyList.length);
+          console.log('========== 帖子数据解析完成 ==========');
+          return data;
+        } catch (error) {
+          console.error('解析帖子数据出错:', error);
+          return data;
+        }
+      }
+
+      function renderPost(data) {
+        console.log('开始渲染帖子...');
+
+        const container = document.getElementById('post-container');
+
+        if (!data.title) {
+          container.innerHTML = '<div class="loading">界面加载失败,应该是掉格式了,请重roll聊天试试...</div>';
+          return;
+        }
+
+        let imagesHTML = '';
+        if (data.images.length > 0) {
+          imagesHTML = '<div class="post-images">';
+          data.images.forEach(img => {
+            imagesHTML += `
+              <div class="post-image-wrapper" onclick="openLightbox('${img.url}'); event.stopPropagation();">
+                <img src="${img.url}" class="post-image ${img.nsfw ? 'nsfw-blur' : ''}" alt="">
+                ${img.nsfw ? '<span class="nsfw-badge">NSFW</span>' : ''}
+              </div>
+            `;
+          });
+          imagesHTML += '</div>';
+        }
+
+        let repliesHTML = '';
+        data.replyList.forEach((reply, index) => {
+          repliesHTML += `
+            <div class="reply-item">
+              <div class="reply-header">
+                <div>
+                  <span class="reply-author">👤 ${reply.author}</span>
+                  <span class="reply-floor">#${index + 1}</span>
+                </div>
+                <span class="reply-time">🕒 ${reply.time}</span>
+              </div>
+              <div class="reply-content">${reply.content}</div>
+            </div>
+          `;
+        });
+
+        container.innerHTML = `
+          <header class="post-header">
+            <div class="header-content">
+              <button class="back-button" onclick="goBack()">
+                ← 返回
+              </button>
+              <div class="post-title-header">${data.title}</div>
+              <button class="theme-toggle" onclick="cycleFontSize()">
+                <span id="font-size-icon">A</span>
+              </button>
+              <button class="theme-toggle" onclick="toggleTheme()">
+                <span id="theme-icon">🌙</span>
+              </button>
+            </div>
+          </header>
+
+          <div class="post-main">
+            <div class="post-title-full">${data.title}</div>
+            <div class="post-meta-info">
+              <div class="meta-item">
+                <span>👤</span>
+                <span class="post-author-name">${data.author}</span>
+              </div>
+              <div class="meta-item">
+                <span>🕒</span>
+                <span>${data.time}</span>
+              </div>
+              <div class="meta-item">
+                <span>📁</span>
+                <span>${data.section}</span>
+              </div>
+            </div>
+
+            <div class="post-content-main">
+              ${data.content
+                .split(/\\n|\n/)
+                .filter(p => p.trim())
+                .map(p => `<p>${p}</p>`)
+                .join('')}
+            </div>
+
+            ${imagesHTML}
+
+            <div class="post-stats-bar">
+              <div class="stat-item">
+                <span>👁️</span>
+                <span>${data.views}</span>
+              </div>
+              <div class="stat-item">
+                <span>💬</span>
+                <span>${data.replies}</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="replies-section">
+            <div class="replies-header">
+              <span>💬</span>
+              <span>全部回复 (${data.replyList.length})</span>
+            </div>
+            ${repliesHTML || '<div class="loading">暂无回复</div>'}
+          </div>
+        `;
+
+        console.log('帖子渲染完成');
+      }
+
+      function cycleFontSize() {
+        const container = document.getElementById('post-container');
+        const icon = document.getElementById('font-size-icon');
+        const fontSizes = ['small', 'medium', 'large', 'xlarge'];
+        const fontIcons = ['A', 'A+', 'A++', 'A+++'];
+
+        let currentSize = localStorage.getItem('forum-font-size') || 'small';
+        let currentIndex = fontSizes.indexOf(currentSize);
+        let nextIndex = (currentIndex + 1) % fontSizes.length;
+        let nextSize = fontSizes[nextIndex];
+
+        container.classList.remove('font-medium', 'font-large', 'font-xlarge');
+        if (nextSize !== 'small') {
+          container.classList.add('font-' + nextSize);
+        }
+
+        icon.textContent = fontIcons[nextIndex];
+        localStorage.setItem('forum-font-size', nextSize);
+      }
+
+      function toggleTheme() {
+        const body = document.body;
+        const icon = document.getElementById('theme-icon');
+        const isLight = body.getAttribute('data-theme') === 'light';
+
+        if (isLight) {
+          body.removeAttribute('data-theme');
+          icon.textContent = '🌙';
+          localStorage.setItem('forum-theme', 'dark');
+        } else {
+          body.setAttribute('data-theme', 'light');
+          icon.textContent = '☀️';
+          localStorage.setItem('forum-theme', 'light');
+        }
+      }
+
+      function syncThemeFromStorage(e) {
+        if (e.key === 'forum-theme') {
+          const body = document.body;
+          const icon = document.getElementById('theme-icon');
+
+          if (e.newValue === 'light') {
+            body.setAttribute('data-theme', 'light');
+            if (icon) icon.textContent = '☀️';
+          } else {
+            body.removeAttribute('data-theme');
+            if (icon) icon.textContent = '🌙';
+          }
+        }
+
+        if (e.key === 'forum-font-size') {
+          const container = document.getElementById('post-container');
+          const icon = document.getElementById('font-size-icon');
+          const fontSizes = ['small', 'medium', 'large', 'xlarge'];
+          const fontIcons = ['A', 'A+', 'A++', 'A+++'];
+
+          container.classList.remove('font-medium', 'font-large', 'font-xlarge');
+          if (e.newValue && e.newValue !== 'small') {
+            container.classList.add('font-' + e.newValue);
+          }
+
+          let index = fontSizes.indexOf(e.newValue || 'small');
+          if (icon) icon.textContent = fontIcons[index];
+        }
+      }
+
+      function openLightbox(imageUrl) {
+        const lightbox = document.getElementById('lightbox');
+        const lightboxImage = document.getElementById('lightbox-image');
+        const loader = document.getElementById('lightbox-loader');
+        const loaderText = loader.querySelector('.lightbox-loader-text');
+
+        const loadingTexts = [
+          '正在加载图片...',
+          '正在获取高清图片...',
+          '正在下载图片资源...',
+          '正在解析图片数据...',
+          '正在加载原图...',
+          '正在读取图片缓存...',
+          '正在连接图片服务器...',
+          '正在传输图片数据...',
+        ];
+
+        const randomText = loadingTexts[Math.floor(Math.random() * loadingTexts.length)];
+        loaderText.textContent = randomText;
+
+        lightboxImage.onload = null;
+        lightboxImage.onerror = null;
+        lightboxImage.classList.remove('loaded');
+        lightboxImage.src = '';
+        loader.classList.remove('hidden');
+        lightbox.classList.add('active');
+
+        const loadTime = 500 + Math.random() * 500;
+
+        setTimeout(() => {
+          lightboxImage.onload = function () {
+            loader.classList.add('hidden');
+            lightboxImage.classList.add('loaded');
+          };
+
+          lightboxImage.onerror = function () {
+            loader.classList.add('hidden');
+            loaderText.textContent = '图片加载失败';
+          };
+
+          lightboxImage.src = imageUrl;
+        }, loadTime);
+      }
+
+      function closeLightbox() {
+        const lightbox = document.getElementById('lightbox');
+        const lightboxImage = document.getElementById('lightbox-image');
+        const loader = document.getElementById('lightbox-loader');
+
+        lightbox.classList.remove('active');
+        lightboxImage.classList.remove('loaded');
+        lightboxImage.onload = null;
+        lightboxImage.onerror = null;
+        lightboxImage.src = '';
+        loader.classList.remove('hidden');
+      }
+
+      function goBack() {
+        const cmd = `/send 返回论坛 | /trigger`;
+        if (typeof triggerSlash === 'function') {
+          triggerSlash(cmd);
+        }
+      }
+
+      window.addEventListener('storage', syncThemeFromStorage);
+
+      setTimeout(function () {
+        const theme = localStorage.getItem('forum-theme');
+        if (theme === 'light') {
+          document.body.setAttribute('data-theme', 'light');
+        }
+
+        console.log('页面加载完成,开始解析帖子数据');
+        try {
+          const data = parsePostDataXML(postDataXML);
+          renderPost(data);
+
+          if (theme === 'light') {
+            const icon = document.getElementById('theme-icon');
+            if (icon) {
+              icon.textContent = '☀️';
+            }
+          }
+
+          const fontSize = localStorage.getItem('forum-font-size') || 'small';
+          const container = document.getElementById('post-container');
+          const fontIcon = document.getElementById('font-size-icon');
+          const fontSizes = ['small', 'medium', 'large', 'xlarge'];
+          const fontIcons = ['A', 'A+', 'A++', 'A+++'];
+
+          if (fontSize !== 'small') {
+            container.classList.add('font-' + fontSize);
+          }
+
+          let index = fontSizes.indexOf(fontSize);
+          if (fontIcon) {
+            fontIcon.textContent = fontIcons[index];
+          }
+        } catch (error) {
+          console.error('渲染失败:', error);
+          document.getElementById('post-container').innerHTML = '<div class="loading">数据加载失败,请刷新重试</div>';
+        }
+      }, 0);
+    </script>
+  </body>
+</html>

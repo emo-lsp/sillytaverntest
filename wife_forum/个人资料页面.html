@@ -1,0 +1,862 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>个人主页 - 妻悦论坛</title>
+    <link rel="stylesheet" href="https://fontsapi.zeoseven.com/292/main/result.css" />
+  </head>
+
+  <body>
+    <style>
+      :root {
+        --dark-red: #c92a2a;
+        --blood-red: #e03131;
+        --light-red: #ff6b6b;
+        --dark-gray: #1a1a1a;
+        --gray: #2a2a2a;
+        --light-gray: #3a3a3a;
+        --text-main: #e0e0e0;
+        --text-dim: #999;
+        --text-dimmer: #666;
+        --gold: #ffd700;
+        --silver: #c0c0c0;
+        --border: rgba(220, 20, 60, 0.2);
+        --hover-bg: rgba(220, 20, 60, 0.08);
+      }
+
+      [data-theme='light'] {
+        --dark-red: #c92a2a;
+        --blood-red: #e03131;
+        --light-red: #ff6b6b;
+        --dark-gray: #f5f5f5;
+        --gray: #ececec;
+        --light-gray: #e0e0e0;
+        --text-main: #2a2a2a;
+        --text-dim: #666;
+        --text-dimmer: #999;
+        --gold: #d97706;
+        --silver: #6b7280;
+        --border: rgba(220, 20, 60, 0.15);
+        --hover-bg: rgba(220, 20, 60, 0.05);
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family:
+          'Noto Sans SC',
+          -apple-system,
+          BlinkMacSystemFont,
+          'Segoe UI',
+          sans-serif;
+        color: var(--text-main);
+        line-height: 1.6;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+      }
+
+      .profile-container {
+        width: 100%;
+        max-width: 820px;
+        margin: 0 auto;
+        background: var(--dark-gray);
+        font-size: var(--base-font-size, 14px);
+      }
+
+      .profile-container.font-medium {
+        --base-font-size: 16px;
+      }
+
+      .profile-container.font-large {
+        --base-font-size: 18px;
+      }
+
+      .profile-container.font-xlarge {
+        --base-font-size: 20px;
+      }
+
+      .profile-header {
+        background: var(--blood-red);
+        padding: 10px 16px;
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        border-bottom: 1px solid var(--border);
+      }
+
+      .header-content {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 12px;
+      }
+
+      .back-button {
+        background: rgba(255, 255, 255, 0.2);
+        border: none;
+        color: #fff;
+        padding: 6px 12px;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: background 0.2s;
+        font-size: 0.85em;
+        font-weight: 500;
+        outline: none;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+      }
+
+      .back-button:hover {
+        background: rgba(255, 255, 255, 0.3);
+      }
+
+      .profile-title-header {
+        font-size: 1em;
+        font-weight: 600;
+        color: #fff;
+        flex: 1;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .theme-toggle {
+        background: rgba(255, 255, 255, 0.2);
+        border: none;
+        color: #fff;
+        padding: 6px 12px;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: background 0.2s;
+        font-size: 0.85em;
+        font-weight: 500;
+        outline: none;
+      }
+
+      .theme-toggle:hover {
+        background: rgba(255, 255, 255, 0.3);
+      }
+
+      .profile-main {
+        background: var(--gray);
+        padding: 16px;
+      }
+
+      .profile-basic-info {
+        background: var(--light-gray);
+        padding: 16px;
+        border-radius: 8px;
+        margin-bottom: 16px;
+      }
+
+      .profile-username-row {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 12px;
+      }
+
+      .profile-username {
+        font-size: 1.5em;
+        font-weight: 700;
+        color: var(--text-main);
+      }
+
+      .level-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        color: #fff;
+        padding: 4px 10px;
+        border-radius: 6px;
+        font-size: 0.85em;
+        font-weight: 600;
+      }
+
+      .level-badge.level-1-19 {
+        background: #808080;
+      }
+
+      .level-badge.level-20-49 {
+        background: linear-gradient(135deg, #c0c0c0, #a8a8a8);
+        box-shadow: 0 2px 4px rgba(192, 192, 192, 0.3);
+      }
+
+      .level-badge.level-50-74 {
+        background: linear-gradient(135deg, #ffd700, #ffed4e);
+        box-shadow: 0 2px 6px rgba(255, 215, 0, 0.4);
+      }
+
+      .level-badge.level-75-89 {
+        background: linear-gradient(135deg, #9b59b6, #8e44ad);
+        box-shadow: 0 2px 8px rgba(155, 89, 182, 0.5);
+      }
+
+      .level-badge.level-90-99 {
+        background: linear-gradient(135deg, #e74c3c, #c0392b);
+        box-shadow: 0 2px 10px rgba(231, 76, 60, 0.6);
+        animation: legendary-glow 2s ease-in-out infinite;
+      }
+
+      .level-badge.level-100 {
+        background: linear-gradient(135deg, #ff00ff, #00ffff, #ff00ff);
+        background-size: 200% 200%;
+        box-shadow: 0 2px 12px rgba(255, 0, 255, 0.8);
+        animation: mythic-shine 3s ease-in-out infinite;
+      }
+
+      @keyframes legendary-glow {
+        0%,
+        100% {
+          box-shadow: 0 2px 10px rgba(231, 76, 60, 0.6);
+        }
+        50% {
+          box-shadow: 0 2px 15px rgba(231, 76, 60, 0.9);
+        }
+      }
+
+      @keyframes mythic-shine {
+        0% {
+          background-position: 0% 50%;
+        }
+        50% {
+          background-position: 100% 50%;
+        }
+        100% {
+          background-position: 0% 50%;
+        }
+      }
+
+      .profile-intro {
+        color: var(--text-dim);
+        font-size: 0.95em;
+        line-height: 1.6;
+        margin-bottom: 12px;
+      }
+
+      .profile-specialty-tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+
+      .specialty-tag {
+        background: var(--dark-gray);
+        color: var(--light-red);
+        padding: 4px 10px;
+        border-radius: 4px;
+        font-size: 0.85em;
+        font-weight: 500;
+      }
+
+      .section-title {
+        font-size: 1.05em;
+        font-weight: 600;
+        color: var(--blood-red);
+        margin-bottom: 12px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+
+      .profile-stats-section {
+        background: var(--light-gray);
+        padding: 16px;
+        border-radius: 8px;
+        margin-bottom: 16px;
+      }
+
+      .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+      }
+
+      .stat-card {
+        background: var(--dark-gray);
+        padding: 12px;
+        border-radius: 6px;
+        text-align: center;
+      }
+
+      .stat-value {
+        font-size: 1.8em;
+        font-weight: 700;
+        color: var(--light-red);
+        margin-bottom: 4px;
+      }
+
+      .stat-label {
+        color: var(--text-dim);
+        font-size: 0.9em;
+      }
+
+      .profile-achievements-section {
+        background: var(--light-gray);
+        padding: 16px;
+        border-radius: 8px;
+        margin-bottom: 16px;
+      }
+
+      .achievements-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 10px;
+      }
+
+      .achievement-card {
+        background: var(--dark-gray);
+        padding: 12px;
+        border-radius: 6px;
+        text-align: center;
+        cursor: pointer;
+        transition: transform 0.2s;
+      }
+
+      .achievement-card:hover {
+        transform: translateY(-2px);
+      }
+
+      .achievement-icon {
+        font-size: 2em;
+        margin-bottom: 6px;
+      }
+
+      .achievement-name {
+        color: var(--text-main);
+        font-size: 0.85em;
+        font-weight: 600;
+        margin-bottom: 4px;
+      }
+
+      .achievement-desc {
+        color: var(--text-dim);
+        font-size: 0.75em;
+        line-height: 1.4;
+      }
+
+      .profile-reviews-section {
+        background: var(--light-gray);
+        padding: 16px;
+        border-radius: 8px;
+      }
+
+      .review-item {
+        background: var(--dark-gray);
+        padding: 14px;
+        border-radius: 6px;
+        margin-bottom: 12px;
+      }
+
+      .review-item:last-child {
+        margin-bottom: 0;
+      }
+
+      .review-item.pinned {
+        border: 2px solid var(--gold);
+      }
+
+      .pinned-badge {
+        display: inline-block;
+        background: var(--gold);
+        color: var(--dark-gray);
+        padding: 2px 8px;
+        border-radius: 4px;
+        font-size: 0.75em;
+        font-weight: 600;
+        margin-bottom: 8px;
+      }
+
+      .review-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 10px;
+      }
+
+      .review-author {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .review-author-name {
+        color: var(--text-main);
+        font-weight: 600;
+        font-size: 0.95em;
+      }
+
+      .review-rating {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+      }
+
+      .star {
+        color: var(--gold);
+        font-size: 1em;
+      }
+
+      .review-content {
+        color: var(--text-main);
+        font-size: 0.95em;
+        line-height: 1.6;
+        margin-bottom: 8px;
+      }
+
+      .review-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        color: var(--text-dimmer);
+        font-size: 0.8em;
+      }
+
+      .review-time {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+      }
+
+      .loading {
+        text-align: center;
+        padding: 50px;
+        color: var(--text-dim);
+        font-size: 1.1em;
+      }
+
+      @media (max-width: 768px) {
+        .profile-container {
+          font-size: var(--base-font-size, 13px);
+        }
+
+        .profile-container.font-medium {
+          --base-font-size: 15px;
+        }
+
+        .profile-container.font-large {
+          --base-font-size: 17px;
+        }
+
+        .profile-container.font-xlarge {
+          --base-font-size: 19px;
+        }
+
+        .stats-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .achievements-grid {
+          grid-template-columns: repeat(2, 1fr);
+        }
+      }
+
+      ::-webkit-scrollbar {
+        width: 6px;
+        height: 6px;
+      }
+
+      ::-webkit-scrollbar-track {
+        background: transparent;
+      }
+
+      ::-webkit-scrollbar-thumb {
+        background: rgba(220, 20, 60, 0.3);
+        border-radius: 3px;
+      }
+
+      ::-webkit-scrollbar-thumb:hover {
+        background: rgba(220, 20, 60, 0.5);
+      }
+
+      * {
+        -webkit-tap-highlight-color: transparent;
+      }
+    </style>
+
+    <div class="profile-container" id="profile-container">
+      <div class="loading">界面加载失败,请重roll聊天试试...</div>
+    </div>
+
+    <script>
+      const chat_message = getChatMessages(getCurrentMessageId())[0];
+      const match = chat_message.message.match(/<user_data>([\s\S]*?)<\/user_data>/);
+      const profileDataXML = match ? match[0] : '<user_data></user_data>';
+
+      function parseProfileDataXML(xmlText) {
+        console.log('========== 个人主页数据解析开始 ==========');
+        console.log('XML数据长度:', xmlText.length);
+
+        const data = {
+          username: '',
+          level: '',
+          levelName: '',
+          intro: '',
+          specialties: [],
+          serviceCount: '',
+          goodRatePercent: '',
+          avgRating: '',
+          points: '',
+          achievements: [],
+          reviews: [],
+        };
+
+        try {
+          const usernameMatch = xmlText.match(/\[昵称\|([^\]]+)\]/);
+          if (usernameMatch) data.username = usernameMatch[1];
+
+          const levelMatch = xmlText.match(/\[等级\|([^\]]+)\]/);
+          if (levelMatch) data.level = levelMatch[1];
+
+          const levelNameMatch = xmlText.match(/\[等级名称\|([^\]]+)\]/);
+          if (levelNameMatch) data.levelName = levelNameMatch[1];
+
+          const introMatch = xmlText.match(/\[个人介绍\|([^\]]+)\]/);
+          if (introMatch) data.intro = introMatch[1];
+
+          const serviceCountMatch = xmlText.match(/\[服务次数\|([^\]]+)\]/);
+          if (serviceCountMatch) data.serviceCount = serviceCountMatch[1];
+
+          const goodRateMatch = xmlText.match(/\[好评率\|([^\]]+)\]/);
+          if (goodRateMatch) data.goodRatePercent = goodRateMatch[1];
+
+          const avgRatingMatch = xmlText.match(/\[平均评分\|([^\]]+)\]/);
+          if (avgRatingMatch) data.avgRating = avgRatingMatch[1];
+
+          const pointsMatch = xmlText.match(/\[积分余额\|([^\]]+)\]/);
+          if (pointsMatch) data.points = pointsMatch[1];
+
+          const specialtiesMatch = xmlText.match(/<specialties>([\s\S]*?)<\/specialties>/i);
+          if (specialtiesMatch && specialtiesMatch[1]) {
+            const specialtyRegex = /\[特长\|([^\]]+)\]/g;
+            let specialtyMatch;
+            while ((specialtyMatch = specialtyRegex.exec(specialtiesMatch[1])) !== null) {
+              data.specialties.push(specialtyMatch[1]);
+            }
+          }
+
+          const achievementsMatch = xmlText.match(/<achievements>([\s\S]*?)<\/achievements>/i);
+          if (achievementsMatch && achievementsMatch[1]) {
+            const achievementRegex = /\[成就\|([^\|]+)\|([^\|]+)\|([^\]]+)\]/g;
+            let achievementMatch;
+            while ((achievementMatch = achievementRegex.exec(achievementsMatch[1])) !== null) {
+              data.achievements.push({
+                icon: achievementMatch[1],
+                name: achievementMatch[2],
+                desc: achievementMatch[3],
+              });
+            }
+          }
+
+          const reviewsMatch = xmlText.match(/<reviews>([\s\S]*?)<\/reviews>/i);
+          if (reviewsMatch && reviewsMatch[1]) {
+            const reviewRegex = /\[评价\|([^\|]+)\|([^\|]+)\|([^\|]+)\|([^\|]+)\|([^\]]+)\]/g;
+            let reviewMatch;
+            while ((reviewMatch = reviewRegex.exec(reviewsMatch[1])) !== null) {
+              data.reviews.push({
+                author: reviewMatch[1],
+                rating: reviewMatch[2],
+                content: reviewMatch[3],
+                time: reviewMatch[4],
+                pinned: reviewMatch[5] === 'true',
+              });
+            }
+          }
+
+          console.log('解析完成 - 特长:', data.specialties.length);
+          console.log('解析完成 - 成就:', data.achievements.length);
+          console.log('解析完成 - 评价:', data.reviews.length);
+          console.log('========== 个人主页数据解析完成 ==========');
+          return data;
+        } catch (error) {
+          console.error('解析个人主页数据出错:', error);
+          return data;
+        }
+      }
+
+      function renderProfile(data) {
+        console.log('开始渲染个人主页...');
+
+        const container = document.getElementById('profile-container');
+
+        if (!data.username) {
+          container.innerHTML = '<div class="loading">界面加载失败,应该是掉格式了,请重roll聊天试试...</div>';
+          return;
+        }
+
+        const level = parseInt(data.level);
+        let levelBadgeClass = '';
+        if (level >= 1 && level <= 19) {
+          levelBadgeClass = 'level-1-19';
+        } else if (level >= 20 && level <= 49) {
+          levelBadgeClass = 'level-20-49';
+        } else if (level >= 50 && level <= 74) {
+          levelBadgeClass = 'level-50-74';
+        } else if (level >= 75 && level <= 89) {
+          levelBadgeClass = 'level-75-89';
+        } else if (level >= 90 && level <= 99) {
+          levelBadgeClass = 'level-90-99';
+        } else if (level === 100) {
+          levelBadgeClass = 'level-100';
+        }
+
+        let specialtiesHTML = '';
+        if (data.specialties.length > 0) {
+          specialtiesHTML = '<div class="profile-specialty-tags">';
+          data.specialties.forEach(specialty => {
+            specialtiesHTML += `<span class="specialty-tag">${specialty}</span>`;
+          });
+          specialtiesHTML += '</div>';
+        }
+
+        let achievementsHTML = '';
+        if (data.achievements.length > 0) {
+          achievementsHTML = '<div class="achievements-grid">';
+          data.achievements.forEach(achievement => {
+            achievementsHTML += `
+              <div class="achievement-card">
+                <div class="achievement-icon">${achievement.icon}</div>
+                <div class="achievement-name">${achievement.name}</div>
+                <div class="achievement-desc">${achievement.desc}</div>
+              </div>
+            `;
+          });
+          achievementsHTML += '</div>';
+        }
+
+        let reviewsHTML = '';
+        if (data.reviews.length > 0) {
+          data.reviews.forEach(review => {
+            const stars = '★'.repeat(parseInt(review.rating));
+            reviewsHTML += `
+              <div class="review-item ${review.pinned ? 'pinned' : ''}">
+                ${review.pinned ? '<div><span class="pinned-badge">📌 置顶</span></div>' : ''}
+                <div class="review-header">
+                  <div class="review-author">
+                    <span class="review-author-name">${review.author}</span>
+                  </div>
+                  <div class="review-rating">
+                    <span class="star">${stars}</span>
+                    <span>${review.rating}</span>
+                  </div>
+                </div>
+                <div class="review-content">${review.content}</div>
+                <div class="review-footer">
+                  <div class="review-time">
+                    <span>🕒</span>
+                    <span>${review.time}</span>
+                  </div>
+                </div>
+              </div>
+            `;
+          });
+        }
+
+        container.innerHTML = `
+          <header class="profile-header">
+            <div class="header-content">
+              <button class="back-button" onclick="goBack()">
+                ← 返回
+              </button>
+              <div class="profile-title-header">个人主页</div>
+              <button class="theme-toggle" onclick="cycleFontSize()">
+                <span id="font-size-icon">A</span>
+              </button>
+              <button class="theme-toggle" onclick="toggleTheme()">
+                <span id="theme-icon">🌙</span>
+              </button>
+            </div>
+          </header>
+
+          <div class="profile-main">
+            <div class="profile-basic-info">
+              <div class="profile-username-row">
+                <div class="profile-username">${data.username}</div>
+                <span class="level-badge ${levelBadgeClass}">
+                  <span>⚡</span>
+                  <span>Lv.${data.level} ${data.levelName}</span>
+                </span>
+              </div>
+              <div class="profile-intro">${data.intro}</div>
+              ${specialtiesHTML}
+            </div>
+
+            <div class="profile-stats-section">
+              <div class="section-title">
+                <span>📈</span>
+                <span>数据统计</span>
+              </div>
+              <div class="stats-grid">
+                <div class="stat-card">
+                  <div class="stat-value">${data.serviceCount}</div>
+                  <div class="stat-label">服务次数</div>
+                </div>
+                <div class="stat-card">
+                  <div class="stat-value">${data.goodRatePercent}</div>
+                  <div class="stat-label">好评率</div>
+                </div>
+                <div class="stat-card">
+                  <div class="stat-value">${data.avgRating}</div>
+                  <div class="stat-label">平均评分</div>
+                </div>
+                <div class="stat-card">
+                  <div class="stat-value">${data.points}</div>
+                  <div class="stat-label">积分余额</div>
+                </div>
+              </div>
+            </div>
+
+            ${
+              data.achievements.length > 0
+                ? `
+            <div class="profile-achievements-section">
+              <div class="section-title">
+                <span>🏆</span>
+                <span>成就展示</span>
+              </div>
+              ${achievementsHTML}
+            </div>
+            `
+                : ''
+            }
+
+            ${
+              data.reviews.length > 0
+                ? `
+            <div class="profile-reviews-section">
+              <div class="section-title">
+                <span>💬</span>
+                <span>评价记录</span>
+              </div>
+              ${reviewsHTML}
+            </div>
+            `
+                : ''
+            }
+          </div>
+        `;
+
+        console.log('个人主页渲染完成');
+      }
+
+      function cycleFontSize() {
+        const container = document.getElementById('profile-container');
+        const icon = document.getElementById('font-size-icon');
+        const fontSizes = ['small', 'medium', 'large', 'xlarge'];
+        const fontIcons = ['A', 'A+', 'A++', 'A+++'];
+
+        let currentSize = localStorage.getItem('forum-font-size') || 'small';
+        let currentIndex = fontSizes.indexOf(currentSize);
+        let nextIndex = (currentIndex + 1) % fontSizes.length;
+        let nextSize = fontSizes[nextIndex];
+
+        container.classList.remove('font-medium', 'font-large', 'font-xlarge');
+        if (nextSize !== 'small') {
+          container.classList.add('font-' + nextSize);
+        }
+
+        icon.textContent = fontIcons[nextIndex];
+        localStorage.setItem('forum-font-size', nextSize);
+      }
+
+      function toggleTheme() {
+        const body = document.body;
+        const icon = document.getElementById('theme-icon');
+        const isLight = body.getAttribute('data-theme') === 'light';
+
+        if (isLight) {
+          body.removeAttribute('data-theme');
+          icon.textContent = '🌙';
+          localStorage.setItem('forum-theme', 'dark');
+        } else {
+          body.setAttribute('data-theme', 'light');
+          icon.textContent = '☀️';
+          localStorage.setItem('forum-theme', 'light');
+        }
+      }
+
+      function syncThemeFromStorage(e) {
+        if (e.key === 'forum-theme') {
+          const body = document.body;
+          const icon = document.getElementById('theme-icon');
+
+          if (e.newValue === 'light') {
+            body.setAttribute('data-theme', 'light');
+            if (icon) icon.textContent = '☀️';
+          } else {
+            body.removeAttribute('data-theme');
+            if (icon) icon.textContent = '🌙';
+          }
+        }
+
+        if (e.key === 'forum-font-size') {
+          const container = document.getElementById('profile-container');
+          const icon = document.getElementById('font-size-icon');
+          const fontSizes = ['small', 'medium', 'large', 'xlarge'];
+          const fontIcons = ['A', 'A+', 'A++', 'A+++'];
+
+          container.classList.remove('font-medium', 'font-large', 'font-xlarge');
+          if (e.newValue && e.newValue !== 'small') {
+            container.classList.add('font-' + e.newValue);
+          }
+
+          let index = fontSizes.indexOf(e.newValue || 'small');
+          if (icon) icon.textContent = fontIcons[index];
+        }
+      }
+
+      function goBack() {
+        const cmd = `/send 返回论坛 | /trigger`;
+        if (typeof triggerSlash === 'function') {
+          triggerSlash(cmd);
+        }
+      }
+
+      window.addEventListener('storage', syncThemeFromStorage);
+
+      setTimeout(function () {
+        const theme = localStorage.getItem('forum-theme');
+        if (theme === 'light') {
+          document.body.setAttribute('data-theme', 'light');
+        }
+
+        const fontSize = localStorage.getItem('forum-font-size') || 'small';
+        const container = document.getElementById('profile-container');
+        const fontIcon = document.getElementById('font-size-icon');
+        const fontSizes = ['small', 'medium', 'large', 'xlarge'];
+        const fontIcons = ['A', 'A+', 'A++', 'A+++'];
+
+        if (fontSize !== 'small') {
+          container.classList.add('font-' + fontSize);
+        }
+
+        let index = fontSizes.indexOf(fontSize);
+        if (fontIcon) {
+          fontIcon.textContent = fontIcons[index];
+        }
+
+        console.log('页面加载完成,开始解析个人主页数据');
+        try {
+          const data = parseProfileDataXML(profileDataXML);
+          renderProfile(data);
+
+          if (theme === 'light') {
+            const icon = document.getElementById('theme-icon');
+            if (icon) {
+              icon.textContent = '☀️';
+            }
+          }
+        } catch (error) {
+          console.error('渲染失败:', error);
+          document.getElementById('profile-container').innerHTML = '<div class="loading">数据加载失败,请刷新重试</div>';
+        }
+      }, 0);
+    </script>
+  </body>
+</html>
