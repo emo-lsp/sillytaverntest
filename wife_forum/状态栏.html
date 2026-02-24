@@ -1,0 +1,1291 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>妻悦论坛 · 状态</title>
+    <link rel="preconnect" href="https://fontsapi.zeoseven.com" crossorigin />
+    <link
+      href="https://fontsapi.zeoseven.com/292/main/result.css"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --dark-red: #c92a2a;
+        --blood-red: #e03131;
+        --light-red: #ff6b6b;
+        --dark-gray: #1a1a1a;
+        --gray: #2a2a2a;
+        --light-gray: #3a3a3a;
+        --text-main: #e0e0e0;
+        --text-dim: #999;
+        --gold: #ffd700;
+        --border: rgba(220, 20, 60, 0.2);
+        --pink: #ff69b4;
+        --teal: #20c997;
+      }
+      [data-theme="light"] {
+        --dark-red: #c92a2a;
+        --blood-red: #e03131;
+        --light-red: #ff6b6b;
+        --dark-gray: #f5f5f5;
+        --gray: #ececec;
+        --light-gray: #e0e0e0;
+        --text-main: #2a2a2a;
+        --text-dim: #666;
+        --gold: #d97706;
+        --border: rgba(220, 20, 60, 0.15);
+        --pink: #e91e8c;
+        --teal: #0ca678;
+      }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      body {
+        font-family: "Noto Sans SC", -apple-system, BlinkMacSystemFont,
+          "Segoe UI", sans-serif;
+        background: transparent;
+        color: var(--text-main);
+        padding: 12px;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+      .status-container {
+        max-width: 520px;
+        margin: 0 auto;
+      }
+      .status-card {
+        background: var(--dark-gray);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        overflow: hidden;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        contain: content;
+      }
+      .status-header {
+        background: linear-gradient(
+          135deg,
+          var(--dark-red) 0%,
+          var(--blood-red) 100%
+        );
+        padding: 14px 18px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        cursor: pointer;
+        user-select: none;
+      }
+      .header-left {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+      .status-icon {
+        font-size: 20px;
+      }
+      .status-title {
+        font-size: 16px;
+        font-weight: 600;
+        color: #fff;
+      }
+      .header-right {
+        display: flex;
+        gap: 10px;
+      }
+      .theme-toggle,
+      .collapse-toggle {
+        width: 28px;
+        height: 28px;
+        background: rgba(0, 0, 0, 0.2);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 6px;
+        color: #fff;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        font-size: 14px;
+      }
+      .info-button {
+        height: 28px;
+        padding: 0 10px;
+        border-radius: 6px;
+        background: rgba(0, 0, 0, 0.22);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        color: #fff;
+        font-size: 12px;
+        font-weight: 600;
+        letter-spacing: 0.3px;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+      .info-button:hover {
+        background: rgba(255, 255, 255, 0.15);
+        transform: translateY(-1px);
+      }
+      .theme-toggle:hover,
+      .collapse-toggle:hover {
+        background: rgba(255, 255, 255, 0.15);
+        transform: scale(1.05);
+      }
+      .status-body {
+        padding: 0;
+        max-height: 800px;
+        overflow: hidden;
+        transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+          opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        opacity: 1;
+      }
+      .status-body.collapsed {
+        max-height: 0;
+        opacity: 0;
+      }
+      .info-modal {
+        position: fixed;
+        inset: 0;
+        z-index: 1200;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.25s ease;
+      }
+      .info-modal.is-open {
+        opacity: 1;
+        pointer-events: auto;
+      }
+      .info-modal-backdrop {
+        position: absolute;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.6);
+      }
+      .info-modal-panel {
+        position: relative;
+        width: calc(100% - 32px);
+        max-width: 360px;
+        background: var(--gray);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        box-shadow: 0 18px 40px rgba(0, 0, 0, 0.35);
+        padding: 16px 18px 18px;
+        z-index: 1;
+        transform: translateY(8px);
+        transition: transform 0.25s ease;
+      }
+      .info-modal.is-open .info-modal-panel {
+        transform: translateY(0);
+      }
+      .info-modal-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        margin-bottom: 8px;
+      }
+      .info-modal-title {
+        font-size: 14px;
+        font-weight: 700;
+        color: var(--text-main);
+      }
+      .info-modal-close {
+        width: 26px;
+        height: 26px;
+        border-radius: 6px;
+        background: rgba(0, 0, 0, 0.2);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        color: var(--text-main);
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s ease;
+      }
+      .info-modal-close:hover {
+        background: rgba(255, 255, 255, 0.12);
+      }
+      .info-modal-body {
+        font-size: 13px;
+        line-height: 1.6;
+        color: var(--text-main);
+      }
+      .status-section {
+        border-bottom: 1px solid var(--border);
+      }
+      .status-section:last-child {
+        border-bottom: none;
+      }
+      .section-header {
+        padding: 12px 18px;
+        background: var(--gray);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        cursor: pointer;
+        user-select: none;
+        transition: background 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+      .section-header:hover {
+        background: var(--light-gray);
+      }
+      .section-title {
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--text-main);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .section-icon {
+        font-size: 16px;
+      }
+      .section-toggle {
+        font-size: 12px;
+        color: var(--text-dim);
+        transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+      .section-toggle.collapsed {
+        transform: rotate(-90deg);
+      }
+      .section-content {
+        padding: 16px 18px;
+        max-height: 600px;
+        overflow: hidden;
+        transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+          opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+          padding 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        opacity: 1;
+      }
+      .section-content.collapsed {
+        max-height: 0;
+        padding: 0 18px;
+        opacity: 0;
+      }
+      #event-section .section-content {
+        display: block !important;
+        max-height: none !important;
+        padding: 16px 18px !important;
+        padding-top: 18px !important;
+        opacity: 1 !important;
+      }
+      .section-content::-webkit-scrollbar {
+        width: 6px;
+      }
+      .section-content::-webkit-scrollbar-track {
+        background: var(--dark-gray);
+      }
+      .section-content::-webkit-scrollbar-thumb {
+        background: var(--dark-red);
+        border-radius: 3px;
+      }
+      .status-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+        gap: 10px;
+      }
+      .status-item {
+        background: var(--gray);
+        border: 1px solid var(--light-gray);
+        border-radius: 8px;
+        padding: 12px 14px;
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+      .status-item:hover {
+        background: var(--light-gray);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      }
+      .item-label {
+        font-size: 12px;
+        color: var(--text-dim);
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+      .item-emoji {
+        font-size: 14px;
+      }
+      .item-value {
+        font-size: 15px;
+        font-weight: 600;
+        color: var(--text-main);
+        display: flex;
+        align-items: center;
+      }
+      .item-value.highlight {
+        color: var(--gold);
+      }
+      .progress-container {
+        margin-top: 6px;
+      }
+      .progress-bar {
+        height: 6px;
+        background: var(--dark-gray);
+        border-radius: 3px;
+        overflow: hidden;
+      }
+      .progress-fill {
+        height: 100%;
+        background: linear-gradient(90deg, var(--blood-red), var(--light-red));
+        border-radius: 3px;
+        transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+      .exp-progress-fill {
+        background: linear-gradient(90deg, #4ecdc4, #44a8a0);
+      }
+      .subscribe-progress-fill {
+        background: linear-gradient(90deg, #ff69b4, #ff1493);
+      }
+      .quota-progress-fill {
+        background: linear-gradient(90deg, #ffd700, #ffaa00);
+      }
+      .event-panel {
+        background: var(--gray);
+        border: 1px solid var(--light-gray);
+        border-radius: 8px;
+        padding: 16px;
+        transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+      .event-panel:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      }
+      .event-status {
+        display: inline-block;
+        background: var(--dark-red);
+        color: #fff;
+        padding: 3px 10px;
+        border-radius: 4px;
+        font-size: 11px;
+        margin-bottom: 10px;
+        font-weight: 600;
+      }
+      .event-name {
+        font-size: 15px;
+        margin-bottom: 10px;
+        color: var(--light-red);
+        font-weight: 600;
+      }
+      .event-details {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        font-size: 13px;
+        color: var(--text-dim);
+      }
+      .event-detail-item {
+        display: flex;
+        justify-content: space-between;
+        padding: 6px 0;
+        border-bottom: 1px solid var(--border);
+        gap: 12px;
+        align-items: flex-start;
+      }
+      .event-detail-item:last-child {
+        border-bottom: none;
+      }
+      .event-detail-item span:first-child {
+        color: var(--text-dim);
+        flex-shrink: 0;
+        white-space: nowrap;
+      }
+      .event-detail-item span:last-child {
+        color: var(--text-main);
+        font-weight: 500;
+        text-align: right;
+        word-wrap: break-word;
+        word-break: break-word;
+        line-height: 1.5;
+        flex: 1;
+        max-width: 70%;
+      }
+      .event-detail-item span:last-child::-webkit-scrollbar {
+        width: 4px;
+      }
+      .event-detail-item span:last-child::-webkit-scrollbar-track {
+        background: var(--dark-gray);
+        border-radius: 2px;
+      }
+      .event-detail-item span:last-child::-webkit-scrollbar-thumb {
+        background: var(--dark-red);
+        border-radius: 2px;
+      }
+      .event-detail-item.special-requirements {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+      }
+      .requirements-list {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        padding-left: 0;
+        max-height: 134px;
+        overflow-y: auto;
+        padding-right: 4px;
+      }
+      .requirements-list::-webkit-scrollbar {
+        width: 4px;
+      }
+      .requirements-list::-webkit-scrollbar-track {
+        background: var(--dark-gray);
+        border-radius: 2px;
+      }
+      .requirements-list::-webkit-scrollbar-thumb {
+        background: var(--dark-red);
+        border-radius: 2px;
+      }
+      .requirement-item {
+        color: var(--text-main);
+        font-weight: 500;
+        line-height: 1.6;
+        padding-left: 4px;
+      }
+      .payment-status-indicator {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        margin-top: 4px;
+      }
+      .status-light {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        display: inline-block;
+        box-shadow: 0 0 4px currentColor;
+        animation: pulse 2s ease-in-out infinite;
+      }
+      .status-light.red {
+        background-color: #ff4444;
+        color: #ff4444;
+      }
+      .status-light.green {
+        background-color: #44ff44;
+        color: #44ff44;
+      }
+      .status-light.yellow {
+        background-color: #ffdd44;
+        color: #ffdd44;
+      }
+      .event-type-tag {
+        display: inline-block;
+        padding: 2px 8px;
+        border-radius: 4px;
+        font-size: 11px;
+        font-weight: 600;
+        color: #fff;
+      }
+      .event-type-tag.couple {
+        background: linear-gradient(135deg, var(--dark-red), var(--blood-red));
+      }
+      .event-type-tag.solo-cheat {
+        background: linear-gradient(135deg, #e91e63, #ff69b4);
+      }
+      .event-type-tag.solo-seek {
+        background: linear-gradient(135deg, #00bcd4, #4dd0e1);
+      }
+      .event-type-tag.other {
+        background: linear-gradient(135deg, #607d8b, #90a4ae);
+      }
+      .participant-section {
+        background: var(--dark-gray);
+        border-radius: 6px;
+        padding: 10px 12px;
+        margin-top: 4px;
+      }
+      .participant-title {
+        font-size: 11px;
+        color: var(--text-dim);
+        margin-bottom: 8px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+      .participant-title .icon {
+        font-size: 12px;
+      }
+      .participant-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+      }
+      .participant-item {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+      }
+      .participant-label {
+        font-size: 10px;
+        color: var(--text-dim);
+      }
+      .participant-value {
+        font-size: 13px;
+        font-weight: 500;
+        color: var(--text-main);
+      }
+      .participant-value.female {
+        color: var(--pink);
+      }
+      .participant-value.male {
+        color: #64b5f6;
+      }
+      .participant-value.unknown {
+        color: var(--text-dim);
+        font-style: italic;
+      }
+      .solo-indicator {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        padding: 2px 6px;
+        background: rgba(233, 30, 99, 0.15);
+        border-radius: 4px;
+        font-size: 10px;
+        color: var(--pink);
+        margin-left: 6px;
+      }
+      @keyframes pulse {
+        0%,
+        100% {
+          opacity: 1;
+        }
+        50% {
+          opacity: 0.6;
+        }
+      }
+      @media (max-width: 640px) {
+        body {
+          padding-bottom: max(24px, env(safe-area-inset-bottom, 24px));
+        }
+        .status-card {
+          margin-bottom: 16px;
+        }
+        .status-container {
+          max-width: 100%;
+        }
+        .status-grid {
+          grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+          gap: 8px;
+        }
+        .status-item {
+          padding: 10px 10px;
+        }
+        #subscribe-section .status-grid {
+          grid-template-columns: repeat(3, 1fr);
+        }
+        .section-content {
+          padding: 14px 16px;
+        }
+        .event-panel {
+          padding: 14px;
+        }
+        .participant-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+      @media (min-width: 641px) {
+        .status-grid {
+          grid-template-columns: repeat(3, 1fr);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="status-container">
+      <div class="status-card">
+        <div class="status-header" onclick="toggleMainCollapse()">
+          <div class="header-left">
+            <div class="status-icon">🔞</div>
+            <div class="status-title">妻悦论坛</div>
+          </div>
+          <div class="header-right">
+            <button class="info-button" onclick="openInfoModal(event)">
+              必看说明
+            </button>
+            <button class="theme-toggle" onclick="toggleTheme(event)">
+              🌓
+            </button>
+            <button class="collapse-toggle" onclick="toggleMainCollapse(event)">
+              <span id="main-collapse-icon">▼</span>
+            </button>
+          </div>
+        </div>
+        <div class="status-body" id="status-body">
+          <div class="status-section">
+            <div class="section-header" onclick="toggleSection('time-section')">
+              <div class="section-title">
+                <span class="section-icon">⏰</span>
+                <span>时间信息</span>
+              </div>
+              <span class="section-toggle" id="time-toggle">▼</span>
+            </div>
+            <div class="section-content" id="time-section">
+              <div class="status-grid">
+                <div class="status-item">
+                  <span class="item-label">
+                    <span class="item-emoji">📅</span>日期
+                  </span>
+                  <span class="item-value" id="current-date">2024-01-15</span>
+                </div>
+                <div class="status-item">
+                  <span class="item-label">
+                    <span class="item-emoji">🕐</span>时刻
+                  </span>
+                  <span class="item-value" id="current-time">14:30</span>
+                </div>
+                <div class="status-item">
+                  <span class="item-label">
+                    <span class="item-emoji">📆</span>星期
+                  </span>
+                  <span class="item-value" id="current-weekday">一</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="status-section">
+            <div
+              class="section-header"
+              onclick="toggleSection('account-section')"
+            >
+              <div class="section-title">
+                <span class="section-icon">💳</span>
+                <span>账户状态</span>
+              </div>
+              <span class="section-toggle" id="account-toggle">▼</span>
+            </div>
+            <div class="section-content" id="account-section">
+              <div class="status-grid">
+                <div class="status-item">
+                  <span class="item-label">
+                    <span class="item-emoji">💎</span>积分
+                  </span>
+                  <span class="item-value highlight" id="account-points"
+                    >5000</span
+                  >
+                </div>
+                <div class="status-item">
+                  <span class="item-label">
+                    <span class="item-emoji">⭐</span>等级
+                  </span>
+                  <span class="item-value" id="account-level">20</span>
+                  <div class="progress-container">
+                    <div class="progress-bar">
+                      <div class="progress-fill" id="level-progress"></div>
+                    </div>
+                  </div>
+                </div>
+                <div class="status-item">
+                  <span class="item-label">
+                    <span class="item-emoji">✨</span>经验值
+                  </span>
+                  <span class="item-value" id="account-exp">45</span>
+                  <div class="progress-container">
+                    <div class="progress-bar">
+                      <div
+                        class="progress-fill exp-progress-fill"
+                        id="exp-progress"
+                      ></div>
+                    </div>
+                  </div>
+                </div>
+                <div class="status-item">
+                  <span class="item-label">
+                    <span class="item-emoji">💰</span>现金余额
+                  </span>
+                  <span class="item-value highlight" id="account-cash">¥0</span>
+                </div>
+                <div class="status-item">
+                  <span class="item-label">
+                    <span class="item-emoji">📊</span>累计服务
+                  </span>
+                  <span class="item-value" id="account-services">8次</span>
+                </div>
+                <div class="status-item">
+                  <span class="item-label">
+                    <span class="item-emoji">👍</span>好评率
+                  </span>
+                  <span class="item-value" id="account-rating">92.5%</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="status-section">
+            <div
+              class="section-header"
+              onclick="toggleSection('subscribe-section')"
+            >
+              <div class="section-title">
+                <span class="section-icon">📺</span>
+                <span>直播订阅</span>
+              </div>
+              <span class="section-toggle" id="subscribe-toggle">▼</span>
+            </div>
+            <div class="section-content" id="subscribe-section">
+              <div class="status-grid">
+                <div class="status-item">
+                  <span class="item-label">
+                    <span class="item-emoji">🎫</span>包月订阅
+                  </span>
+                  <span class="item-value" id="subscribe-type">无订阅</span>
+                </div>
+                <div class="status-item">
+                  <span class="item-label">
+                    <span class="item-emoji">⏳</span>剩余时间
+                  </span>
+                  <span class="item-value" id="subscribe-days">0天</span>
+                  <div class="progress-container">
+                    <div class="progress-bar">
+                      <div
+                        class="progress-fill subscribe-progress-fill"
+                        id="subscribe-progress"
+                      ></div>
+                    </div>
+                  </div>
+                </div>
+                <div class="status-item">
+                  <span class="item-label">
+                    <span class="item-emoji">🎁</span>免费额度
+                  </span>
+                  <span class="item-value" id="subscribe-quota">0次</span>
+                  <div class="progress-container">
+                    <div class="progress-bar">
+                      <div
+                        class="progress-fill quota-progress-fill"
+                        id="quota-progress"
+                      ></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="status-section" id="event-section">
+          <div class="section-content" style="padding-top: 18px">
+            <div
+              style="
+                font-size: 13px;
+                font-weight: 600;
+                color: var(--text-main);
+                margin-bottom: 12px;
+                display: flex;
+                align-items: center;
+                gap: 8px;
+              "
+            >
+              <span style="font-size: 16px">🎯</span>
+              <span>当前事件</span>
+            </div>
+            <div class="event-panel">
+              <span class="event-status" id="event-status">未开始</span>
+              <div class="event-name" id="event-name">无事件</div>
+              <div class="event-details" id="event-details"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="info-modal" id="info-modal" aria-hidden="true">
+      <div class="info-modal-backdrop" onclick="closeInfoModal(event)"></div>
+      <div
+        class="info-modal-panel"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="info-modal-title"
+      >
+        <div class="info-modal-header">
+          <div class="info-modal-title" id="info-modal-title">必看说明</div>
+          <button class="info-modal-close" onclick="closeInfoModal(event)">
+            ✕
+          </button>
+        </div>
+        <div class="info-modal-body">
+          图片只会在论坛前端结构中出现，正文没有图片。
+        </div>
+      </div>
+    </div>
+    <script>
+      function openInfoModal(event) {
+        if (event) event.stopPropagation();
+        const modal = document.getElementById("info-modal");
+        if (!modal) return;
+        modal.classList.add("is-open");
+        modal.setAttribute("aria-hidden", "false");
+      }
+
+      function closeInfoModal(event) {
+        if (event) event.stopPropagation();
+        const modal = document.getElementById("info-modal");
+        if (!modal) return;
+        modal.classList.remove("is-open");
+        modal.setAttribute("aria-hidden", "true");
+      }
+
+      document.addEventListener("keydown", (event) => {
+        if (event.key !== "Escape") return;
+        const modal = document.getElementById("info-modal");
+        if (modal && modal.classList.contains("is-open")) {
+          closeInfoModal();
+        }
+      });
+
+      function SafeGetValue(obj, path, defaultValue = "N/A") {
+        let keys = Array.isArray(path) ? path : path.split(".");
+        let current = obj;
+        for (let i = 0; i < keys.length; i++) {
+          if (
+            current === undefined ||
+            current === null ||
+            typeof current !== "object" ||
+            !current.hasOwnProperty(keys[i])
+          ) {
+            return defaultValue;
+          }
+          current = current[keys[i]];
+        }
+        if (current === undefined || current === null) {
+          return defaultValue;
+        }
+        if (Array.isArray(current)) {
+          if (current.length > 0) {
+            const actualValue = current[0];
+            if (typeof actualValue === "boolean") {
+              return actualValue;
+            }
+            return String(actualValue);
+          } else {
+            return defaultValue;
+          }
+        }
+        if (typeof current === "boolean") {
+          return current;
+        }
+        if (typeof current === "number") {
+          return current;
+        }
+        if (typeof current === "string") {
+          return current;
+        }
+        return JSON.stringify(current);
+      }
+
+      function updateProgressBar(
+        barId,
+        valueMainId,
+        valueDescId,
+        rawValue,
+        min = 0,
+        max = 100,
+        color
+      ) {
+        const progressBar = document.getElementById(barId);
+        const valueMainDisplay = document.getElementById(valueMainId);
+        const valueDescDisplay = document.getElementById(valueDescId);
+        if (!progressBar || !valueMainDisplay) {
+          return;
+        }
+        let numericValue = parseFloat(rawValue);
+        if (isNaN(numericValue)) {
+          numericValue = parseFloat(String(rawValue).replace(/[^0-9.-]/g, ""));
+        }
+        if (!isNaN(numericValue)) {
+          valueMainDisplay.innerText = numericValue;
+        } else {
+          valueMainDisplay.innerText = rawValue;
+        }
+        if (valueDescDisplay) {
+          valueDescDisplay.innerText = "";
+        }
+        if (!isNaN(numericValue)) {
+          numericValue = Math.max(min, Math.min(max, numericValue));
+          const range = max - min;
+          const percentage =
+            range === 0
+              ? numericValue >= max
+                ? 100
+                : 0
+              : ((numericValue - min) / range) * 100;
+          progressBar.style.width = `${Math.max(
+            0,
+            Math.min(100, percentage)
+          )}%`;
+          progressBar.style.backgroundColor = color ? color : "#667eea";
+        }
+      }
+
+      function toggleSection(sectionId) {
+        const section = document.getElementById(sectionId);
+        const toggleIcon = document.getElementById(
+          sectionId.replace("-section", "-toggle")
+        );
+        if (section) {
+          section.classList.toggle("collapsed");
+          if (toggleIcon) {
+            toggleIcon.classList.toggle("collapsed");
+          }
+        }
+      }
+
+      function toggleTheme(event) {
+        event.stopPropagation();
+        const currentTheme =
+          document.documentElement.getAttribute("data-theme");
+        const newTheme = currentTheme === "light" ? "dark" : "light";
+        document.documentElement.setAttribute("data-theme", newTheme);
+        localStorage.setItem("forum-theme", newTheme);
+      }
+
+      function syncThemeFromStorage(e) {
+        if (e.key === "forum-theme") {
+          const newTheme = e.newValue || "dark";
+          document.documentElement.setAttribute("data-theme", newTheme);
+        }
+      }
+
+      function toggleMainCollapse(event) {
+        if (event) event.stopPropagation();
+        const body = document.getElementById("status-body");
+        const icon = document.getElementById("main-collapse-icon");
+        const isCollapsing = !body.classList.contains("collapsed");
+        body.classList.toggle("collapsed");
+        icon.textContent = isCollapsing ? "▶" : "▼";
+        localStorage.setItem("main-collapsed", isCollapsing);
+        const sections = ["time-section", "account-section", "subscribe-section"];
+        sections.forEach((sectionId) => {
+          const section = document.getElementById(sectionId);
+          const toggleIcon = document.getElementById(
+            sectionId.replace("-section", "-toggle")
+          );
+          if (section && toggleIcon) {
+            if (isCollapsing) {
+              section.classList.add("collapsed");
+              toggleIcon.classList.add("collapsed");
+            } else {
+              section.classList.remove("collapsed");
+              toggleIcon.classList.remove("collapsed");
+            }
+          }
+        });
+      }
+
+      function getEventTypeTag(type) {
+        const soloTypes = ["独自偷情型", "主动寻欢型"];
+        const coupleTypes = ["旁观型", "半放养型", "完全放养型", "羞辱型"];
+
+        if (type === "独自偷情型") {
+          return '<span class="event-type-tag solo-cheat">独自偷情</span>';
+        } else if (type === "主动寻欢型") {
+          return '<span class="event-type-tag solo-seek">主动寻欢</span>';
+        } else if (coupleTypes.includes(type)) {
+          return `<span class="event-type-tag couple">${type}</span>`;
+        } else if (type === "其他") {
+          return '<span class="event-type-tag other">其他</span>';
+        } else if (type === "无") {
+          return "";
+        }
+        return `<span class="event-type-tag other">${type}</span>`;
+      }
+
+      function isSoloEvent(type) {
+        return type === "独自偷情型" || type === "主动寻欢型";
+      }
+
+      function renderParticipants(type, maleName, femaleName, relationship) {
+        const isSolo = isSoloEvent(type);
+        const maleEmpty =
+          !maleName ||
+          maleName === "无" ||
+          maleName === "不知情" ||
+          maleName === "N/A";
+
+        let html = '<div class="participant-section">';
+
+        if (isSolo || maleEmpty) {
+          html += `<div class="participant-title"><span class="icon">👤</span>参与者<span class="solo-indicator">♀ 独自行动</span></div>`;
+          html += '<div class="participant-grid">';
+          html += `<div class="participant-item"><span class="participant-label">女方姓名</span><span class="participant-value female">${
+            femaleName || "未知"
+          }</span></div>`;
+
+          if (maleName === "不知情") {
+            html += `<div class="participant-item"><span class="participant-label">伴侣状态</span><span class="participant-value unknown">不知情</span></div>`;
+          } else if (relationship) {
+            html += `<div class="participant-item"><span class="participant-label">女方状态</span><span class="participant-value">${relationship}</span></div>`;
+          }
+          html += "</div>";
+        } else {
+          html += `<div class="participant-title"><span class="icon">👥</span>参与伴侣</div>`;
+          html += '<div class="participant-grid">';
+          html += `<div class="participant-item"><span class="participant-label">男方姓名</span><span class="participant-value male">${maleName}</span></div>`;
+          html += `<div class="participant-item"><span class="participant-label">女方姓名</span><span class="participant-value female">${
+            femaleName || "未知"
+          }</span></div>`;
+          if (relationship) {
+            html += `<div class="participant-item" style="grid-column: span 2;"><span class="participant-label">双方关系</span><span class="participant-value">${relationship}</span></div>`;
+          }
+          html += "</div>";
+        }
+
+        html += "</div>";
+        return html;
+      }
+
+      async function initDisplay() {
+        try {
+          const savedTheme = localStorage.getItem("forum-theme") || "dark";
+          document.documentElement.setAttribute("data-theme", savedTheme);
+          const savedMainCollapsed =
+            localStorage.getItem("main-collapsed") === "true";
+          if (savedMainCollapsed) {
+            document.getElementById("status-body").classList.add("collapsed");
+            document.getElementById("main-collapse-icon").textContent = "▶";
+          }
+          const messages = await getChatMessages(getCurrentMessageId());
+          if (!messages || messages.length === 0 || !messages[0].data) {
+            return;
+          }
+          const gameData = messages[0].data;
+          const characterData = gameData.stat_data;
+          if (!characterData) {
+            return;
+          }
+
+          const dateElem = document.getElementById("current-date");
+          if (dateElem) {
+            dateElem.textContent = SafeGetValue(
+              characterData,
+              "时间戳.日期",
+              "2024-01-15"
+            );
+          }
+          const timeElem = document.getElementById("current-time");
+          if (timeElem) {
+            timeElem.textContent = SafeGetValue(
+              characterData,
+              "时间戳.时刻",
+              "14:30"
+            );
+          }
+          const weekdayElem = document.getElementById("current-weekday");
+          if (weekdayElem) {
+            weekdayElem.textContent = SafeGetValue(
+              characterData,
+              "时间戳.星期",
+              "一"
+            );
+          }
+
+          const pointsElem = document.getElementById("account-points");
+          if (pointsElem) {
+            pointsElem.textContent = SafeGetValue(
+              characterData,
+              "账户.积分",
+              5000
+            );
+          }
+          const levelElem = document.getElementById("account-level");
+          const levelProgress = document.getElementById("level-progress");
+          if (levelElem && levelProgress) {
+            const level = SafeGetValue(characterData, "账户.等级", 20);
+            levelElem.textContent = level;
+            updateProgressBar(
+              "level-progress",
+              "account-level",
+              null,
+              level,
+              0,
+              100
+            );
+          }
+          const expElem = document.getElementById("account-exp");
+          const expProgress = document.getElementById("exp-progress");
+          if (expElem && expProgress) {
+            const exp = SafeGetValue(characterData, "账户.经验值", 45);
+            expElem.textContent = exp;
+            updateProgressBar("exp-progress", "account-exp", null, exp, 0, 100);
+          }
+          const cashElem = document.getElementById("account-cash");
+          if (cashElem) {
+            const cash = SafeGetValue(characterData, "账户.现金余额", 0);
+            cashElem.textContent = `¥${cash}`;
+          }
+          const servicesElem = document.getElementById("account-services");
+          if (servicesElem) {
+            const services = SafeGetValue(
+              characterData,
+              "账户.累计服务次数",
+              8
+            );
+            servicesElem.textContent = `${services}次`;
+          }
+          const ratingElem = document.getElementById("account-rating");
+          if (ratingElem) {
+            const rating = SafeGetValue(characterData, "账户.好评率", 92.5);
+            ratingElem.textContent = `${rating}%`;
+          }
+
+          const subscribeTypeElem = document.getElementById("subscribe-type");
+          if (subscribeTypeElem) {
+            subscribeTypeElem.textContent = SafeGetValue(
+              characterData,
+              "大色批订阅.包月订阅",
+              "无订阅"
+            );
+          }
+          const subscribeDaysElem = document.getElementById("subscribe-days");
+          const subscribeProgress = document.getElementById("subscribe-progress");
+          if (subscribeDaysElem && subscribeProgress) {
+            const days = SafeGetValue(characterData, "大色批订阅.订阅剩余时间", 0);
+            subscribeDaysElem.textContent = `${days}天`;
+            updateProgressBar(
+              "subscribe-progress",
+              "subscribe-days",
+              null,
+              days,
+              0,
+              30
+            );
+          }
+          const subscribeQuotaElem = document.getElementById("subscribe-quota");
+          const quotaProgress = document.getElementById("quota-progress");
+          if (subscribeQuotaElem && quotaProgress) {
+            const subscribeType = SafeGetValue(characterData, "大色批订阅.包月订阅", "无订阅");
+            const quota = SafeGetValue(characterData, "大色批订阅.免费额度", 0);
+            const maxQuota = subscribeType === "老色批" ? 8 : subscribeType === "普通色批" ? 5 : subscribeType === "弱鸡色批" ? 3 : 0;
+            subscribeQuotaElem.textContent = `${quota}次`;
+            updateProgressBar(
+              "quota-progress",
+              "subscribe-quota",
+              null,
+              quota,
+              0,
+              maxQuota || 1
+            );
+          }
+
+          const eventStatusElem = document.getElementById("event-status");
+          const eventNameElem = document.getElementById("event-name");
+          const eventDetailsElem = document.getElementById("event-details");
+          if (eventStatusElem && eventNameElem && eventDetailsElem) {
+            const status = SafeGetValue(
+              characterData,
+              "当前事件.状态",
+              "未开始"
+            );
+            const name = SafeGetValue(characterData, "当前事件.名称", "无事件");
+            const type = SafeGetValue(characterData, "当前事件.类型", "无");
+            const paymentStatus = SafeGetValue(
+              characterData,
+              "当前事件.报酬支付状态",
+              "未支付"
+            );
+            const appointmentTime = SafeGetValue(
+              characterData,
+              "当前事件.约定时间",
+              ""
+            );
+            const location = SafeGetValue(characterData, "当前事件.地点", "");
+            const maleName = SafeGetValue(
+              characterData,
+              "当前事件.参与伴侣.男方姓名",
+              ""
+            );
+            const femaleName = SafeGetValue(
+              characterData,
+              "当前事件.参与伴侣.女方姓名",
+              ""
+            );
+            const relationship = SafeGetValue(
+              characterData,
+              "当前事件.参与伴侣.伴侣关系",
+              ""
+            );
+            const specialRequirements = characterData["当前事件"]?.["特殊要求"];
+
+            eventStatusElem.textContent = status;
+            eventNameElem.textContent = name;
+
+            let detailsHTML = "";
+
+            if (name !== "无事件" && paymentStatus) {
+              let lightClass = "";
+              if (
+                paymentStatus === "未支付" ||
+                paymentStatus === "反向未支付"
+              ) {
+                lightClass = "red";
+              } else if (
+                paymentStatus === "已支付" ||
+                paymentStatus === "反向已支付"
+              ) {
+                lightClass = "green";
+              } else if (paymentStatus === "无需支付") {
+                lightClass = "yellow";
+              }
+              detailsHTML += `<div class="event-detail-item"><span>报酬支付:</span><span><div class="payment-status-indicator">${paymentStatus}<span class="status-light ${lightClass}"></span></div></span></div>`;
+            }
+
+            if (type !== "无") {
+              detailsHTML += `<div class="event-detail-item"><span>事件类型:</span><span>${getEventTypeTag(
+                type
+              )}</span></div>`;
+            }
+            if (appointmentTime) {
+              detailsHTML += `<div class="event-detail-item"><span>约定时间:</span><span>${appointmentTime}</span></div>`;
+            }
+            if (location) {
+              detailsHTML += `<div class="event-detail-item"><span>约会地点:</span><span>${location}</span></div>`;
+            }
+
+            if (femaleName || maleName) {
+              detailsHTML += renderParticipants(
+                type,
+                maleName,
+                femaleName,
+                relationship
+              );
+            }
+
+            if (
+              Array.isArray(specialRequirements) &&
+              specialRequirements.length > 0
+            ) {
+              detailsHTML += `<div class="event-detail-item special-requirements"><span>特殊要求:</span><div class="requirements-list">`;
+              specialRequirements.forEach((req) => {
+                detailsHTML += `<div class="requirement-item">• ${req}</div>`;
+              });
+              detailsHTML += `</div></div>`;
+            }
+            eventDetailsElem.innerHTML = detailsHTML;
+          }
+        } catch (error) {
+          console.error("状态栏初始化失败:", error);
+        }
+      }
+
+      window.addEventListener("storage", syncThemeFromStorage);
+
+      setTimeout(function() {
+        const savedTheme = localStorage.getItem("forum-theme") || "dark";
+        document.documentElement.setAttribute("data-theme", savedTheme);
+        const savedMainCollapsed = localStorage.getItem("main-collapsed") === "true";
+        if (savedMainCollapsed) {
+          const body = document.getElementById("status-body");
+          const icon = document.getElementById("main-collapse-icon");
+          if (body) body.classList.add("collapsed");
+          if (icon) icon.textContent = "▶";
+        }
+        initDisplay();
+      }, 0);
+    </script>
+  </body>
+</html>
