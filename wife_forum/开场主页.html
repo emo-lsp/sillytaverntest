@@ -1,0 +1,759 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>妻悦论坛</title>
+    <link
+      rel="stylesheet"
+      href="https://fontsapi.zeoseven.com/292/main/result.css"
+    />
+    <style>
+      :root {
+        --dark-red: #c92a2a;
+        --blood-red: #e03131;
+        --light-red: #ff6b6b;
+        --dark-gray: #1a1a1a;
+        --gray: #2a2a2a;
+        --light-gray: #3a3a3a;
+        --text-main: #e0e0e0;
+        --text-dim: #999;
+        --text-dimmer: #666;
+        --gold: #ffd700;
+        --border: rgba(220, 20, 60, 0.2);
+        --hover-bg: rgba(220, 20, 60, 0.08);
+      }
+
+      [data-theme="light"] {
+        --dark-red: #c92a2a;
+        --blood-red: #e03131;
+        --light-red: #ff6b6b;
+        --dark-gray: #f5f5f5;
+        --gray: #ececec;
+        --light-gray: #e0e0e0;
+        --text-main: #2a2a2a;
+        --text-dim: #666;
+        --text-dimmer: #999;
+        --gold: #d97706;
+        --border: rgba(220, 20, 60, 0.15);
+        --hover-bg: rgba(220, 20, 60, 0.05);
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Noto Sans SC", -apple-system, BlinkMacSystemFont,
+          "Segoe UI", sans-serif;
+        background: transparent;
+        color: var(--text-main);
+        line-height: 1.6;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        padding: 20px;
+        margin: 0;
+      }
+
+      .main-container {
+        width: 100%;
+        max-width: 100%;
+        margin: 0;
+        background: rgba(26, 26, 26, 0.6);
+        border: 2px solid var(--blood-red);
+        border-radius: 16px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5),
+          inset 0 0 60px rgba(0, 0, 0, 0.5);
+        overflow: hidden;
+      }
+
+      .content-wrapper {
+        padding: 0;
+      }
+
+      .header-section {
+        text-align: center;
+        margin-bottom: 24px;
+        padding: 40px 20px;
+        background: linear-gradient(
+          135deg,
+          rgba(42, 42, 42, 0.95) 0%,
+          rgba(58, 58, 58, 0.9) 100%
+        );
+        border-bottom: 3px solid var(--blood-red);
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+        position: relative;
+        overflow: hidden;
+      }
+
+      .header-section::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background: linear-gradient(
+          90deg,
+          transparent,
+          var(--blood-red),
+          transparent
+        );
+        opacity: 0.5;
+      }
+
+      .header-section::after {
+        content: "";
+        position: absolute;
+        bottom: -2px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 80px;
+        height: 3px;
+        background: var(--blood-red);
+        box-shadow: 0 0 15px rgba(220, 20, 60, 0.6);
+      }
+
+      .main-title {
+        font-size: clamp(1.8em, 5vw, 2.5em);
+        font-weight: 700;
+        color: var(--blood-red);
+        margin-bottom: 16px;
+        text-shadow: 0 2px 8px rgba(0, 0, 0, 0.6);
+        letter-spacing: 4px;
+        position: relative;
+        display: inline-block;
+      }
+
+      .main-title::before,
+      .main-title::after {
+        content: "◆";
+        color: var(--blood-red);
+        opacity: 0.4;
+        font-size: 0.5em;
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+      }
+
+      .main-title::before {
+        left: -30px;
+      }
+
+      .main-title::after {
+        right: -30px;
+      }
+
+      .author-info {
+        font-size: 0.95em;
+        color: var(--text-dim);
+        opacity: 0.7;
+        font-style: italic;
+      }
+
+      .copyright-notice {
+        background: linear-gradient(
+          135deg,
+          rgba(42, 42, 42, 0.6) 0%,
+          rgba(58, 58, 58, 0.4) 100%
+        );
+        padding: 20px;
+        margin: 20px 16px;
+        border-left: 4px solid var(--blood-red);
+        border-radius: 0 8px 8px 0;
+        font-size: 0.9em;
+        line-height: 2;
+        color: var(--text-main);
+        box-shadow: -3px 3px 15px rgba(0, 0, 0, 0.3),
+          inset 0 0 30px rgba(220, 20, 60, 0.03);
+        position: relative;
+        backdrop-filter: blur(5px);
+      }
+
+      .copyright-notice::before {
+        content: "";
+        position: absolute;
+        left: -4px;
+        top: 0;
+        width: 4px;
+        height: 100%;
+        background: linear-gradient(180deg, var(--blood-red), transparent);
+      }
+
+      .copyright-notice strong {
+        color: var(--blood-red);
+        font-size: 1.05em;
+        display: inline-block;
+        margin-bottom: 8px;
+        text-shadow: 0 1px 3px rgba(220, 20, 60, 0.3);
+      }
+
+      .section-title {
+        font-size: 1.3em;
+        font-weight: 600;
+        color: var(--blood-red);
+        margin: 40px 16px 20px 16px;
+        padding-left: 16px;
+        padding-bottom: 12px;
+        border-bottom: 2px solid var(--blood-red);
+        text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
+        position: relative;
+      }
+
+      .section-title::before {
+        content: "";
+        position: absolute;
+        left: 0;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 4px;
+        height: 70%;
+        background: var(--blood-red);
+      }
+
+      .section-title::after {
+        content: "";
+        position: absolute;
+        bottom: -2px;
+        left: 0;
+        width: 60px;
+        height: 2px;
+        background: var(--blood-red);
+      }
+
+      .info-card {
+        background: linear-gradient(
+          135deg,
+          rgba(42, 42, 42, 0.5) 0%,
+          rgba(58, 58, 58, 0.3) 100%
+        );
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 20px;
+        margin: 0 16px 20px 16px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4),
+          inset 0 1px 0 rgba(255, 255, 255, 0.05);
+        backdrop-filter: blur(10px);
+        position: relative;
+        overflow: hidden;
+      }
+
+      .info-card::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 2px;
+        background: linear-gradient(
+          90deg,
+          transparent,
+          var(--blood-red),
+          transparent
+        );
+        opacity: 0.3;
+      }
+
+      .info-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 14px 16px;
+        background: rgba(58, 58, 58, 0.4);
+        border-radius: 8px;
+        margin-bottom: 10px;
+        border-left: 3px solid transparent;
+        transition: all 0.3s ease;
+        position: relative;
+      }
+
+      .info-row:hover {
+        background: rgba(58, 58, 58, 0.6);
+        border-left-color: var(--blood-red);
+        transform: translateX(2px);
+      }
+
+      .info-row:last-child {
+        margin-bottom: 0;
+      }
+
+      .info-label {
+        min-width: 90px;
+        color: var(--blood-red);
+        font-size: 0.9em;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+      }
+
+      .info-label::before {
+        content: "▸";
+        margin-right: 6px;
+        opacity: 0.5;
+      }
+
+      .info-value {
+        color: var(--text-main);
+        font-size: 0.9em;
+        flex: 1;
+        text-align: right;
+      }
+
+      .community-section {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 16px;
+        margin: 20px 16px;
+      }
+
+      .community-card {
+        background: linear-gradient(
+          135deg,
+          var(--blood-red) 0%,
+          var(--dark-red) 100%
+        );
+        color: #fff;
+        padding: 28px 20px;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.25s ease;
+        border-radius: 12px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+        position: relative;
+        overflow: hidden;
+      }
+
+      .community-card::before {
+        content: "";
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: radial-gradient(
+          circle,
+          rgba(255, 255, 255, 0.1) 0%,
+          transparent 70%
+        );
+        opacity: 0;
+        transition: opacity 0.3s ease;
+      }
+
+      .community-card:hover::before {
+        opacity: 1;
+      }
+
+      .community-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.6);
+      }
+
+      .community-icon {
+        font-size: 2.5em;
+        margin-bottom: 12px;
+        filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.3));
+      }
+
+      .community-title {
+        font-size: 1.15em;
+        font-weight: 700;
+        margin-bottom: 8px;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+      }
+
+      .community-info {
+        font-size: 0.85em;
+        opacity: 0.95;
+        line-height: 1.6;
+      }
+
+      .community-notice {
+        background: linear-gradient(
+          135deg,
+          rgba(42, 42, 42, 0.6) 0%,
+          rgba(58, 58, 58, 0.4) 100%
+        );
+        padding: 20px;
+        margin: 20px 16px;
+        border-left: 4px solid var(--blood-red);
+        border-radius: 0 8px 8px 0;
+        font-size: 1.1em;
+        line-height: 1.8;
+        color: var(--text-main);
+        box-shadow: -3px 3px 15px rgba(0, 0, 0, 0.3),
+          inset 0 0 30px rgba(220, 20, 60, 0.03);
+        position: relative;
+        backdrop-filter: blur(5px);
+        font-weight: 600;
+      }
+
+      .community-notice::before {
+        content: "";
+        position: absolute;
+        left: -4px;
+        top: 0;
+        width: 4px;
+        height: 100%;
+        background: linear-gradient(180deg, var(--blood-red), transparent);
+      }
+
+      .opening-section {
+        margin: 30px 0 0 0;
+      }
+
+      .opening-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 20px;
+        margin: 20px 16px;
+      }
+
+      .opening-card {
+        background: linear-gradient(
+          135deg,
+          rgba(42, 42, 42, 0.6) 0%,
+          rgba(58, 58, 58, 0.4) 100%
+        );
+        border: 1px solid var(--border);
+        padding: 24px;
+        cursor: pointer;
+        transition: all 0.25s ease;
+        border-radius: 12px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4),
+          inset 0 1px 0 rgba(255, 255, 255, 0.05);
+        position: relative;
+        overflow: hidden;
+        backdrop-filter: blur(10px);
+      }
+
+      .opening-card::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 3px;
+        background: linear-gradient(90deg, var(--blood-red), transparent);
+        opacity: 0;
+        transition: opacity 0.3s ease;
+      }
+
+      .opening-card:hover::before {
+        opacity: 1;
+      }
+
+      .opening-card:hover {
+        background: linear-gradient(
+          135deg,
+          rgba(42, 42, 42, 0.8) 0%,
+          rgba(58, 58, 58, 0.6) 100%
+        );
+        transform: translateY(-2px);
+        box-shadow: 0 6px 25px rgba(0, 0, 0, 0.6);
+        border-color: var(--blood-red);
+      }
+
+      .opening-badge {
+        display: inline-block;
+        background: linear-gradient(135deg, var(--blood-red), var(--dark-red));
+        color: #fff;
+        padding: 6px 14px;
+        font-size: 0.75em;
+        margin-bottom: 14px;
+        border-radius: 20px;
+        font-weight: 700;
+        letter-spacing: 1px;
+        box-shadow: 0 2px 10px rgba(220, 20, 60, 0.4);
+        text-transform: uppercase;
+      }
+
+      .opening-title {
+        font-size: 1.3em;
+        font-weight: 700;
+        color: var(--blood-red);
+        margin-bottom: 12px;
+        text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
+      }
+
+      .opening-desc {
+        font-size: 0.9em;
+        color: var(--text-dim);
+        line-height: 1.8;
+      }
+
+      .footer-note {
+        text-align: center;
+        margin: 50px 16px 30px 16px;
+        padding: 30px 20px;
+        font-size: clamp(1.3em, 4vw, 1.8em);
+        font-weight: 700;
+        color: var(--blood-red);
+        text-shadow: 0 2px 8px rgba(0, 0, 0, 0.6);
+        background: linear-gradient(
+          135deg,
+          rgba(42, 42, 42, 0.4) 0%,
+          rgba(58, 58, 58, 0.2) 100%
+        );
+        border-radius: 12px;
+        border: 1px solid var(--border);
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+        position: relative;
+        overflow: hidden;
+      }
+
+      .footer-note::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 60%;
+        height: 2px;
+        background: linear-gradient(
+          90deg,
+          transparent,
+          var(--blood-red),
+          transparent
+        );
+      }
+
+      .footer-note::after {
+        content: "";
+        position: absolute;
+        bottom: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 60%;
+        height: 2px;
+        background: linear-gradient(
+          90deg,
+          transparent,
+          var(--blood-red),
+          transparent
+        );
+      }
+
+      @media (max-width: 768px) {
+        .main-title::before,
+        .main-title::after {
+          display: none;
+        }
+
+        .section-title {
+          font-size: 1.1em;
+        }
+
+        .community-section {
+          grid-template-columns: 1fr;
+        }
+
+        .opening-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .info-label {
+          min-width: 70px;
+          font-size: 0.85em;
+        }
+
+        .info-value {
+          font-size: 0.85em;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="main-container">
+      <div class="content-wrapper">
+        <div class="header-section">
+          <h1 class="main-title">妻悦论坛</h1>
+          <p class="author-info">作者：emo的lsp</p>
+        </div>
+
+        <div class="copyright-notice">
+          <strong>版权声明</strong><br />
+          这张角色卡是免费的，永远禁止商业化行为。如果你是购买获得，请立即退款并向购买平台举报死妈贩卖者，维护创作者和您自身的权益。
+        </div>
+
+        <div class="copyright-notice">
+          <strong>转载声明</strong><br />
+          未经作者明确授权，严禁将本作品转载至其他任何平台。
+        </div>
+
+        <div class="section-title">◆ 角色简介</div>
+        <div class="info-card">
+          <div class="info-row">
+            <span class="info-label">角色名称</span>
+            <span class="info-value">{{user}}</span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">角色定位</span>
+            <span class="info-value">妻悦论坛新人，25岁上班族</span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">当前状态</span>
+            <span class="info-value">刚刚注册账号，准备开启论坛之旅</span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">成长路径</span>
+            <span class="info-value">从0级新手到传说级用户的完整历程</span>
+          </div>
+        </div>
+
+        <div class="section-title">◆ 加入社群</div>
+        <div class="community-section">
+          <div class="community-card" onclick="copyQQGroup()">
+            <div class="community-icon">🐧</div>
+            <div class="community-title">企鹅群</div>
+            <div
+              class="community-info"
+              style="margin-top: 8px; font-size: 0.8em"
+            >
+              点击复制群号<br /><br />
+              😅秒退群的你进来做什么呢？
+            </div>
+          </div>
+          <div class="community-card" onclick="openDiscordWithConfirm()">
+            <div class="community-icon">💬</div>
+            <div class="community-title">Discord服务器</div>
+            <div
+              class="community-info"
+              style="margin-top: 8px; font-size: 0.8em"
+            >
+              点击打开链接
+            </div>
+          </div>
+        </div>
+
+        <div class="community-notice">
+          发卡会有提醒，欢迎加入闲聊——酒馆sillytavern相关...或者更多...
+        </div>
+
+        <div class="section-title">◆ 点击—开启故事</div>
+        <div class="opening-section">
+          <div class="opening-grid">
+            <div class="opening-card" onclick="switchToOpening(1)">
+              <div class="opening-badge">等级：0</div>
+              <div class="opening-title">初入论坛</div>
+              <div class="opening-desc">
+                你刚刚注册了妻悦论坛账号，对这个圈子充满好奇。作为0级新人，你需要从零开始积累经验，逐步融入这个隐秘的圈子。
+              </div>
+            </div>
+
+            <div class="opening-card" onclick="switchToOpening(2)">
+              <div class="opening-badge">等级：20</div>
+              <div class="opening-title">新手上路</div>
+              <div class="opening-desc">
+                你当前的等级是20级，刚刚在妻悦论坛崭露头角。凭借积极的参与和良好的口碑，你已经积累了不少好评，开始在圈内小有名气。
+              </div>
+            </div>
+
+            <div class="opening-card" onclick="switchToOpening(3)">
+              <div class="opening-badge">等级：100</div>
+              <div class="opening-title">神话降临</div>
+              <div class="opening-desc">
+                你当前的等级是100级，已经达到传说中的神话境界。在妻悦论坛，你的名字就是品质的保证，无数人梦寐以求能与你合作。
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="copyright-notice">
+          <strong>📋 使用前必读</strong><br />
+          ❌ 必须关闭小白X的【渲染开关】<br />
+          ✅ 必须安装并启用【提示词模板】<br />
+          ✅ 必须安装并更新【酒馆助手】至最新版
+        </div>
+
+        <div class="footer-note">你给我点赞了，对吧？</div>
+      </div>
+    </div>
+
+    <script>
+      function copyQQGroup() {
+        const groupNumber = "151611202";
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard
+            .writeText(groupNumber)
+            .then(() => {
+              if (typeof triggerSlash === "function") {
+                triggerSlash("/echo severity=success 企鹅群号已复制到剪贴板！");
+              } else {
+                alert("企鹅群号已复制：" + groupNumber);
+              }
+            })
+            .catch(() => {
+              fallbackCopy(groupNumber);
+            });
+        } else {
+          fallbackCopy(groupNumber);
+        }
+      }
+
+      function fallbackCopy(text) {
+        const textArea = document.createElement("textarea");
+        textArea.value = text;
+        textArea.style.position = "fixed";
+        textArea.style.left = "-999999px";
+        document.body.appendChild(textArea);
+        textArea.select();
+        try {
+          document.execCommand("copy");
+          if (typeof triggerSlash === "function") {
+            triggerSlash("/echo severity=success 企鹅群号已复制到剪贴板！");
+          } else {
+            alert("企鹅群号已复制：" + text);
+          }
+        } catch (err) {
+          if (typeof triggerSlash === "function") {
+            triggerSlash(
+              "/echo severity=error 复制失败，请手动复制群号：151611202"
+            );
+          } else {
+            alert("复制失败，请手动复制群号：151611202");
+          }
+        }
+        document.body.removeChild(textArea);
+      }
+
+      function openDiscordWithConfirm() {
+        if (confirm("即将跳转到Discord服务器，是否继续？")) {
+          window.open("https://discord.gg/x3aKHgfE3u", "_blank");
+        }
+      }
+
+      async function switchToOpening(swipeId) {
+        const cards = document.querySelectorAll(".opening-card");
+        const clickedCard = event.currentTarget;
+
+        if (clickedCard) {
+          clickedCard.style.opacity = "0.6";
+          clickedCard.style.pointerEvents = "none";
+        }
+
+        try {
+          const messages = await getChatMessages("0", { include_swipe: true });
+          if (messages && messages[0].swipes && messages[0].swipes[swipeId]) {
+            await setChatMessage(messages[0].swipes[swipeId], 0, {
+              swipe_id: swipeId,
+              refresh: "display_and_render_current",
+            });
+          } else {
+            throw new Error(
+              `开场白 ${swipeId} 未找到，请确保已按顺序添加所有开场白。`
+            );
+          }
+        } catch (error) {
+          console.error("切换开场白失败:", error);
+          alert(`切换失败: ${error.message}`);
+          if (clickedCard) {
+            clickedCard.style.opacity = "1";
+            clickedCard.style.pointerEvents = "auto";
+          }
+        }
+      }
+    </script>
+  </body>
+</html>
