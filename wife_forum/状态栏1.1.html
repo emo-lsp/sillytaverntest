@@ -1186,7 +1186,7 @@
             const paymentStatus = SafeGetValue(
               characterData,
               "当前事件.报酬支付状态",
-              "未支付"
+              "未收取"
             );
             const appointmentTime = SafeGetValue(
               characterData,
@@ -1218,20 +1218,14 @@
 
             if (name !== "无事件" && paymentStatus) {
               let lightClass = "";
-              if (
-                paymentStatus === "未支付" ||
-                paymentStatus === "反向未支付"
-              ) {
+              if (paymentStatus === "未收取") {
                 lightClass = "red";
-              } else if (
-                paymentStatus === "已支付" ||
-                paymentStatus === "反向已支付"
-              ) {
+              } else if (paymentStatus === "已收取") {
                 lightClass = "green";
-              } else if (paymentStatus === "无需支付") {
+              } else if (paymentStatus === "无需收取" || paymentStatus === "免费服务") {
                 lightClass = "yellow";
               }
-              detailsHTML += `<div class="event-detail-item"><span>报酬支付:</span><span><div class="payment-status-indicator">${paymentStatus}<span class="status-light ${lightClass}"></span></div></span></div>`;
+              detailsHTML += `<div class="event-detail-item"><span>报酬收取:</span><span><div class="payment-status-indicator">${paymentStatus}<span class="status-light ${lightClass}"></span></div></span></div>`;
             }
 
             if (type !== "无") {
