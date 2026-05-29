@@ -376,10 +376,52 @@
         }
 
         .st-memory-label {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
             font-family: var(--st-font-hand);
             font-size: 0.85rem;
             color: var(--st-text-muted);
             white-space: nowrap;
+        }
+
+        .st-delta-badge {
+            min-width: 26px;
+            padding: 2px 7px;
+            border: 1px solid var(--st-border);
+            border-radius: 999px;
+            background: color-mix(in srgb, var(--st-photo-border) 54%, transparent);
+            color: var(--st-text-muted);
+            font-family: var(--st-font-mono);
+            font-size: 0.62rem;
+            line-height: 1.2;
+            text-align: center;
+            text-transform: none;
+            transition: background 0.35s var(--st-ease), border-color 0.35s var(--st-ease), color 0.35s var(--st-ease);
+        }
+
+        .st-delta-badge.up {
+            border-color: color-mix(in srgb, var(--st-accent) 60%, var(--st-border));
+            background: color-mix(in srgb, var(--st-accent) 16%, transparent);
+            color: var(--st-accent);
+        }
+
+        .st-delta-badge.down {
+            border-color: color-mix(in srgb, var(--st-danger) 60%, var(--st-border));
+            background: color-mix(in srgb, var(--st-danger) 12%, transparent);
+            color: var(--st-danger);
+        }
+
+        .st-delta-badge.reset {
+            border-color: var(--st-border);
+            background: var(--st-border-strong);
+            color: var(--st-text-muted);
+        }
+
+        .st-delta-badge.unknown {
+            border-color: color-mix(in srgb, #d6ad5b 65%, var(--st-border));
+            background: color-mix(in srgb, #d6ad5b 14%, transparent);
+            color: #9a7432;
         }
 
         .st-memory-track {
@@ -470,12 +512,73 @@
             $(`#${containerId}`).html(html);
         }
 
-        function populateData() {
+        function parseNumber(value) {
+            if (typeof value === 'number') return Number.isFinite(value) ? value : null;
+            const match = String(value ?? '').match(/-?\d+(?:\.\d+)?/);
+            return match ? Number(match[0]) : null;
+        }
+
+        function getMessageStatData(message) {
+            return _.get(message, 'data.stat_data') ??
+                _.get(message, 'variables.stat_data') ??
+                _.get(message, 'data.variables.stat_data') ??
+                null;
+        }
+
+        async function getPreviousStatData() {
+            const messageId = Number(getCurrentMessageId());
+            if (!Number.isFinite(messageId) || messageId <= 0) return null;
+
+            try {
+                const prevMessages = await getChatMessages(messageId - 1);
+                return getMessageStatData(prevMessages?.[0]);
+            } catch (error) {
+                console.warn('[st-status] 读取上一楼变量失败:', error);
+                return null;
+            }
+        }
+
+        function renderDeltaBadge(elementId, currentValue, prevValue, hasPrevData) {
+            const $badge = $(`#${elementId}`);
+            const currentNumber = parseNumber(currentValue);
+            const prevNumber = hasPrevData ? parseNumber(prevValue) : currentNumber;
+
+            if (currentNumber === null || prevNumber === null) {
+                $badge.text('--').attr('class', 'st-delta-badge unknown').attr('title', '无法比较上一楼数值');
+                return;
+            }
+
+            const delta = hasPrevData ? currentNumber - prevNumber : 0;
+            const roundedDelta = Math.round(delta * 10) / 10;
+            let label = '0';
+            let state = 'zero';
+
+            if (currentNumber === 0 && prevNumber !== 0) {
+                label = '归零';
+                state = 'reset';
+            } else if (roundedDelta > 0) {
+                label = `+${roundedDelta} ↑`;
+                state = 'up';
+            } else if (roundedDelta < 0) {
+                label = `${roundedDelta} ↓`;
+                state = 'down';
+            }
+
+            $badge
+                .text(label)
+                .attr('class', `st-delta-badge ${state}`)
+                .attr('title', hasPrevData ? `较上一楼变化 ${roundedDelta}` : '无上一楼可比较');
+        }
+
+        async function populateData() {
             const all_variables = getAllVariables();
+            const prevStatData = await getPreviousStatData();
 
             const time = _.get(all_variables, 'stat_data.世界.当前时间', '未知');
             const location = _.get(all_variables, 'stat_data.世界.当前地点', '未知');
-            const stability = _.get(all_variables, 'stat_data.记忆稳定性', 0);
+            const stabilityRaw = _.get(all_variables, 'stat_data.记忆稳定性', 0);
+            const stability = parseNumber(stabilityRaw) ?? 0;
+            const prevStability = prevStatData === null ? stability : _.get(prevStatData, '记忆稳定性');
             const outfit = _.get(all_variables, 'stat_data.雪音.当前着装', '未知');
             const thought = _.get(all_variables, 'stat_data.雪音.当前想法', '...');
             const emotion = _.get(all_variables, 'stat_data.雪音.当前情绪', '安静');
@@ -488,6 +591,7 @@
             $('#val-thought').text(thought);
 
             $('#val-stage-text').text(`记忆${getStageName(stability)} · ${stability}%`);
+            renderDeltaBadge('val-stability-delta', stability, prevStability, prevStatData !== null);
             renderScale('track-stability', stability, 100, stability < 30);
 
             $('#cg-layer').css('background-image', getEmotionBackground(emotion));
@@ -554,7 +658,7 @@
             }
 
             /* 3. 注入数据 */
-            populateData();
+            await populateData();
         }
 
         /* 使用 MVU 指定的错误捕获包装器 */
@@ -669,7 +773,10 @@
 
                     <div class="st-stamp-item" style="flex: 1 1 100%;">
                         <div class="st-memory-scale">
-                            <span class="st-memory-label" id="val-stage-text">记忆融合期 [0%]</span>
+                            <span class="st-memory-label">
+                                <span id="val-stage-text">记忆融合期 · 0%</span>
+                                <span id="val-stability-delta" class="st-delta-badge zero">0</span>
+                            </span>
                             <div class="st-memory-track" id="track-stability">
                                 <!-- JS动态填充刻度 -->
                             </div>
