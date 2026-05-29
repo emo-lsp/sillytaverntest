@@ -436,10 +436,6 @@
 
   <script>
     (function () {
-      var scriptEl = document.currentScript;
-      var root = scriptEl && scriptEl.previousElementSibling
-        ? scriptEl.previousElementSibling
-        : document.querySelectorAll('#xy-options-root')[document.querySelectorAll('#xy-options-root').length - 1];
       var THEME_KEY = 'mvu-st-theme';
       var MODE_KEY = 'mvu-st-option-mode';
       var THEME_EVENT = 'mvu-st-theme-change';
@@ -453,8 +449,8 @@
       var mode = 'append';
       var collapsed = false;
 
-      function q(selector) {
-        return root.querySelector(selector);
+      function q(id) {
+        return document.getElementById(id);
       }
 
       function normalizeTheme(theme) {
@@ -503,8 +499,8 @@
       }
 
       function updateMode() {
-        q('#xy-mode').textContent = MODE_META[mode].label;
-        q('#xy-note').textContent = MODE_META[mode].note;
+        q('xy-mode').textContent = MODE_META[mode].label;
+        q('xy-note').textContent = MODE_META[mode].note;
       }
 
       function toggleMode() {
@@ -517,7 +513,7 @@
 
       function setCollapsed(value) {
         collapsed = !!value;
-        q('#xy-shell').classList.toggle('collapsed', collapsed);
+        q('xy-shell').classList.toggle('collapsed', collapsed);
       }
 
       function parseOptions(optionsString) {
@@ -528,8 +524,8 @@
       }
 
       function createOptions(optionsString) {
-        var grid = q('#xy-grid');
-        var empty = q('#xy-empty');
+        var grid = q('xy-grid');
+        var empty = q('xy-empty');
         var options = parseOptions(optionsString);
         grid.innerHTML = '';
         empty.hidden = options.length > 0;
@@ -584,53 +580,21 @@
       }
 
       function readOptionsSource() {
-        if (typeof window.__xy_options_source === 'string' && window.__xy_options_source.trim()) {
-          return window.__xy_options_source.trim();
-        }
-
-        var source = q('#xy-options-source');
+        var source = q('xy-options-source');
         var inline = source ? (source.textContent || '').trim() : '';
         if (inline && inline !== '$1') return inline;
 
         try {
-          var chatMessage = getChatMessages(getCurrentMessageId())[0];
-          var match = chatMessage.message.match(/<options>((?:(?!<options>).)*?)<\/options>/s);
-          return match ? match[1] : '';
+          var messages = getChatMessages(getCurrentMessageId());
+          var raw = messages && messages[0] ? messages[0].message : '';
+          var match = raw.match(/<options>([\s\S]*?)<\/options>/i);
+          inline = match ? match[1] : '';
         } catch (error) {
           console.warn('[xy-options] 读取选项失败:', error);
-          return '';
+          inline = '';
         }
+        return inline;
       }
-
-      q('#xy-theme').addEventListener('click', function (event) {
-        event.stopPropagation();
-        toggleTheme();
-      });
-
-      q('#xy-mode').addEventListener('click', function (event) {
-        event.stopPropagation();
-        toggleMode();
-      });
-
-      q('#xy-collapse').addEventListener('click', function (event) {
-        event.stopPropagation();
-        setCollapsed(!collapsed);
-      });
-
-      q('#xy-header').addEventListener('click', function (event) {
-        if (event.target.closest('.xy-controls')) return;
-        setCollapsed(!collapsed);
-      });
-
-      q('#xy-grid').addEventListener('click', function (event) {
-        var item = event.target.closest('.xy-option');
-        if (!item) return;
-        item.classList.add('sending');
-        setTimeout(function () {
-          item.classList.remove('sending');
-        }, 360);
-        triggerOption(item.dataset.text || item.textContent || '');
-      });
 
       listen(THEME_EVENT, function (event) {
         applyTheme(event.detail && event.detail.theme);
@@ -643,6 +607,36 @@
       });
 
       setTimeout(function () {
+        q('xy-theme').addEventListener('click', function (event) {
+          event.stopPropagation();
+          toggleTheme();
+        });
+
+        q('xy-mode').addEventListener('click', function (event) {
+          event.stopPropagation();
+          toggleMode();
+        });
+
+        q('xy-collapse').addEventListener('click', function (event) {
+          event.stopPropagation();
+          setCollapsed(!collapsed);
+        });
+
+        q('xy-header').addEventListener('click', function (event) {
+          if (event.target.closest('.xy-controls')) return;
+          setCollapsed(!collapsed);
+        });
+
+        q('xy-grid').addEventListener('click', function (event) {
+          var item = event.target.closest('.xy-option');
+          if (!item) return;
+          item.classList.add('sending');
+          setTimeout(function () {
+            item.classList.remove('sending');
+          }, 360);
+          triggerOption(item.dataset.text || item.textContent || '');
+        });
+
         try {
           var savedTheme = localStorage.getItem(THEME_KEY) || 'day';
           var savedMode = localStorage.getItem(MODE_KEY);
