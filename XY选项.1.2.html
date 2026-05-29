@@ -1,0 +1,636 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <style>
+    :root {
+      --st-bg: transparent;
+      --st-paper: #faf8f5;
+      --st-border: #e6e2db;
+      --st-border-strong: rgba(0, 0, 0, 0.08);
+      --st-text-main: #3a342c;
+      --st-text-muted: #8c8273;
+      --st-accent: #d4849a;
+      --st-tape: rgba(235, 227, 215, 0.85);
+      --st-danger: #c95c55;
+      --st-shadow-ambient: 0 8px 30px rgba(40, 30, 20, 0.08);
+      --st-shadow-photo: inset 0 0 0 1px rgba(0,0,0,0.04), 0 2px 8px rgba(0,0,0,0.06);
+      --st-photo-border: #ffffff;
+      --st-font-mono: "JetBrains Mono", "SF Mono", "Consolas", monospace;
+      --st-font-sans: -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Noto Sans CJK SC", "Microsoft YaHei", sans-serif;
+      --st-font-serif: "Songti SC", "Noto Serif CJK SC", "STSong", serif;
+      --st-font-hand: "Kaiti SC", "STKaiti", "KaiTi", cursive;
+      --st-ease: cubic-bezier(0.19, 1, 0.22, 1);
+    }
+
+    body.theme-night {
+      --st-paper: #282a30;
+      --st-border: #3f424a;
+      --st-border-strong: rgba(255, 255, 255, 0.06);
+      --st-text-main: #e6e8eb;
+      --st-text-muted: #9ea3ac;
+      --st-accent: #f2aebf;
+      --st-tape: rgba(48, 51, 59, 0.85);
+      --st-danger: #ef766d;
+      --st-shadow-ambient: 0 8px 30px rgba(0, 0, 0, 0.5);
+      --st-shadow-photo: inset 0 0 0 1px rgba(255,255,255,0.03), 0 2px 12px rgba(0,0,0,0.25);
+      --st-photo-border: #1e1f24;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      padding: 14px 16px;
+      background: var(--st-bg);
+      color: var(--st-text-main);
+      font-family: var(--st-font-sans);
+      display: flex;
+      justify-content: center;
+      transition: color 0.4s var(--st-ease);
+      -webkit-font-smoothing: antialiased;
+    }
+
+    ::-webkit-scrollbar {
+      display: none;
+    }
+
+    .xy-options {
+      width: 100%;
+      max-width: 520px;
+      position: relative;
+      animation: xy-pop 0.55s var(--st-ease) both;
+    }
+
+    .xy-shell {
+      width: 100%;
+      background: var(--st-paper);
+      border: 1px solid var(--st-border-strong);
+      border-radius: 6px 6px 4px 4px;
+      box-shadow: var(--st-shadow-ambient);
+      padding: 14px 14px 16px;
+      position: relative;
+      overflow: hidden;
+      transition: background 0.4s var(--st-ease), box-shadow 0.4s var(--st-ease), padding 0.45s var(--st-ease);
+    }
+
+    .xy-shell::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.24), transparent 34%),
+        repeating-linear-gradient(0deg, rgba(100, 90, 82, 0.05) 0, rgba(100, 90, 82, 0.05) 1px, transparent 1px, transparent 26px);
+      pointer-events: none;
+    }
+
+    body.theme-night .xy-shell::before {
+      background-image:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.04), transparent 34%),
+        repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.035) 0, rgba(255, 255, 255, 0.035) 1px, transparent 1px, transparent 26px);
+    }
+
+    .xy-shell.collapsed {
+      padding-bottom: 14px;
+    }
+
+    .xy-ticket-charm {
+      position: absolute;
+      top: -12px;
+      left: 18px;
+      width: 58px;
+      height: 88px;
+      z-index: 5;
+      pointer-events: none;
+      transform-origin: 29px 7px;
+      animation: xy-dangle 5.5s ease-in-out infinite;
+    }
+
+    .xy-header {
+      position: relative;
+      z-index: 2;
+      min-height: 68px;
+      padding: 8px 0 10px 78px;
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+      border-bottom: 1px dashed var(--st-border);
+      transition: border-color 0.4s var(--st-ease);
+    }
+
+    .xy-title-block {
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .xy-title {
+      margin: 0;
+      font-family: var(--st-font-hand);
+      font-size: 1.25rem;
+      line-height: 1.2;
+      color: var(--st-text-main);
+      font-weight: 700;
+    }
+
+    .xy-subtitle {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      width: fit-content;
+      color: var(--st-text-muted);
+      font-family: var(--st-font-mono);
+      font-size: 0.68rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .xy-subtitle::before {
+      content: "";
+      width: 28px;
+      height: 1px;
+      background: var(--st-border);
+    }
+
+    .xy-controls {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      flex-shrink: 0;
+    }
+
+    .xy-mode,
+    .xy-btn {
+      border: 1px solid var(--st-border-strong);
+      background: color-mix(in srgb, var(--st-photo-border) 70%, transparent);
+      color: var(--st-text-muted);
+      box-shadow: var(--st-shadow-photo);
+      cursor: pointer;
+      transition: background 0.25s var(--st-ease), color 0.25s var(--st-ease), border-color 0.25s var(--st-ease), transform 0.2s var(--st-ease);
+    }
+
+    .xy-mode:hover,
+    .xy-btn:hover {
+      border-color: color-mix(in srgb, var(--st-accent) 55%, var(--st-border));
+      color: var(--st-accent);
+      transform: translateY(-1px);
+    }
+
+    .xy-mode:active,
+    .xy-btn:active {
+      transform: translateY(0) scale(0.96);
+    }
+
+    .xy-mode {
+      height: 28px;
+      padding: 0 10px;
+      border-radius: 999px;
+      font-family: var(--st-font-mono);
+      font-size: 0.68rem;
+      letter-spacing: 0.04em;
+      white-space: nowrap;
+    }
+
+    .xy-btn {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0;
+    }
+
+    .xy-btn svg {
+      width: 14px;
+      height: 14px;
+      fill: currentColor;
+      transition: transform 0.35s var(--st-ease);
+    }
+
+    .xy-shell.collapsed .xy-collapse-icon {
+      transform: rotate(180deg);
+    }
+
+    .xy-body {
+      position: relative;
+      z-index: 2;
+      display: grid;
+      grid-template-rows: 1fr;
+      transition: grid-template-rows 0.46s var(--st-ease), opacity 0.35s var(--st-ease), margin 0.46s var(--st-ease);
+    }
+
+    .xy-shell.collapsed .xy-body {
+      grid-template-rows: 0fr;
+      opacity: 0;
+      margin-top: 0;
+    }
+
+    .xy-body-inner {
+      overflow: hidden;
+      min-height: 0;
+    }
+
+    .xy-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+      padding-top: 14px;
+    }
+
+    .xy-option {
+      position: relative;
+      min-height: 58px;
+      border: 1px dashed var(--st-border);
+      border-radius: 4px;
+      background:
+        linear-gradient(120deg, color-mix(in srgb, var(--st-accent) 10%, transparent), transparent 58%),
+        color-mix(in srgb, var(--st-photo-border) 66%, transparent);
+      color: var(--st-text-main);
+      cursor: pointer;
+      padding: 12px 12px 12px 38px;
+      text-align: left;
+      font-size: 0.92rem;
+      line-height: 1.55;
+      white-space: pre-wrap;
+      word-break: break-word;
+      opacity: 0;
+      animation: xy-option-in 0.42s var(--st-ease) forwards;
+      transition: background 0.25s var(--st-ease), border-color 0.25s var(--st-ease), box-shadow 0.25s var(--st-ease), color 0.35s var(--st-ease);
+    }
+
+    .xy-option::before {
+      content: attr(data-index);
+      position: absolute;
+      top: 12px;
+      left: 12px;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      background: var(--st-border-strong);
+      color: var(--st-text-muted);
+      font-family: var(--st-font-mono);
+      font-size: 0.65rem;
+    }
+
+    .xy-option:hover {
+      border-color: var(--st-accent);
+      background:
+        linear-gradient(120deg, color-mix(in srgb, var(--st-accent) 15%, transparent), transparent 64%),
+        color-mix(in srgb, var(--st-photo-border) 82%, transparent);
+      box-shadow: 2px 2px 0 color-mix(in srgb, var(--st-accent) 24%, transparent);
+    }
+
+    .xy-option:active {
+      box-shadow: 1px 1px 0 color-mix(in srgb, var(--st-accent) 22%, transparent);
+    }
+
+    .xy-option.sending {
+      border-style: solid;
+      color: var(--st-accent);
+    }
+
+    .xy-empty {
+      margin-top: 14px;
+      padding: 14px;
+      border: 1px dashed var(--st-border);
+      border-radius: 4px;
+      color: var(--st-text-muted);
+      font-family: var(--st-font-hand);
+      font-size: 1rem;
+      text-align: center;
+    }
+
+    @keyframes xy-pop {
+      from {
+        opacity: 0;
+        transform: translateY(8px) scale(0.99);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    @keyframes xy-option-in {
+      from {
+        opacity: 0;
+        transform: translateY(6px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes xy-dangle {
+      0%, 100% {
+        transform: rotate(-3deg);
+      }
+      50% {
+        transform: rotate(4deg);
+      }
+    }
+
+    @media (max-width: 480px) {
+      body {
+        padding: 10px 8px;
+      }
+
+      .xy-shell {
+        border-radius: 0;
+        border-left: none;
+        border-right: none;
+      }
+
+      .xy-header {
+        padding-left: 68px;
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .xy-controls {
+        justify-content: flex-end;
+      }
+
+      .xy-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 1ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 1ms !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="xy-options" id="xy-options-root">
+    <div class="xy-ticket-charm" aria-hidden="true">
+      <svg viewBox="0 0 58 88" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="29" cy="8" r="6" fill="none" stroke="var(--st-text-muted)" stroke-width="1.4" opacity="0.55"/>
+        <circle cx="29" cy="8" r="2.4" fill="var(--st-photo-border)" stroke="var(--st-text-muted)" stroke-width="0.8" opacity="0.86"/>
+        <path d="M29 14 L29 22" stroke="var(--st-text-muted)" stroke-width="1.2" opacity="0.5"/>
+        <path d="M12 22 H46 C47.7 22 49 23.3 49 25 V67 C49 68.7 47.7 70 46 70 H12 C10.3 70 9 68.7 9 67 V25 C9 23.3 10.3 22 12 22Z" fill="var(--st-accent)" fill-opacity="0.18" stroke="var(--st-accent)" stroke-width="1.2"/>
+        <path d="M16 31 H42 M16 39 H36 M16 47 H42" stroke="var(--st-text-muted)" stroke-width="1" opacity="0.34"/>
+        <path d="M20 58 C23 54 27 54 29 58 C31 54 35 54 38 58" stroke="var(--st-accent)" stroke-width="1.4" stroke-linecap="round" opacity="0.78"/>
+        <text x="29" y="82" text-anchor="middle" font-family="var(--st-font-mono)" font-size="7" fill="var(--st-text-muted)" opacity="0.72">CHOICE</text>
+      </svg>
+    </div>
+
+    <section class="xy-shell" id="xy-shell">
+      <header class="xy-header" id="xy-header">
+        <div class="xy-title-block">
+          <h2 class="xy-title">行动选项</h2>
+          <span class="xy-subtitle">XUE YIN NOTE</span>
+        </div>
+        <div class="xy-controls">
+          <button class="xy-mode" id="xy-mode" type="button">追加输入</button>
+          <button class="xy-btn" id="xy-theme" type="button" aria-label="切换主题" title="切换昼夜">
+            <svg viewBox="0 0 24 24"><path d="M12 3a9 9 0 1 0 9 9c0-.46-.04-.92-.1-1.36a5.389 5.389 0 0 1-4.4 2.26 5.403 5.403 0 0 1-3.14-9.8c-.44-.06-.9-.1-1.36-.1z"/></svg>
+          </button>
+          <button class="xy-btn" id="xy-collapse" type="button" aria-label="收起/展开" title="收起/展开选项">
+            <svg class="xy-collapse-icon" viewBox="0 0 24 24"><path d="M16 8l-4 4-4-4-1.41 1.41L12 15.24l5.41-5.41z"/></svg>
+          </button>
+        </div>
+      </header>
+
+      <div class="xy-body" id="xy-body">
+        <div class="xy-body-inner">
+          <div class="xy-grid" id="xy-grid"></div>
+          <div class="xy-empty" id="xy-empty" hidden>当前楼层没有可用选项。</div>
+        </div>
+      </div>
+    </section>
+
+    <div id="xy-options-source" hidden>$1</div>
+  </div>
+
+  <script>
+    (function () {
+      var THEME_KEY = 'mvu-st-theme';
+      var MODE_KEY = 'mvu-st-option-mode';
+      var THEME_EVENT = 'mvu-st-theme-change';
+      var COLLAPSE_EVENT = 'mvu-st-collapse-change';
+      var MODES = ['send', 'setinput', 'append'];
+      var MODE_META = {
+        send: { label: '直接发送' },
+        setinput: { label: '仅输入' },
+        append: { label: '追加输入' }
+      };
+      var mode = 'append';
+      var collapsed = false;
+
+      function q(id) {
+        return document.getElementById(id);
+      }
+
+      function normalizeTheme(theme) {
+        return theme === 'night' || theme === 'dark' ? 'night' : 'day';
+      }
+
+      function emit(type, detail) {
+        try {
+          window.dispatchEvent(new CustomEvent(type, { detail: detail }));
+        } catch (error) {}
+        try {
+          if (window.parent && window.parent !== window) {
+            window.parent.dispatchEvent(new CustomEvent(type, { detail: detail }));
+          }
+        } catch (error) {}
+      }
+
+      function listen(type, handler) {
+        window.addEventListener(type, handler);
+        try {
+          if (window.parent && window.parent !== window) {
+            window.parent.addEventListener(type, handler);
+          }
+        } catch (error) {}
+      }
+
+      function applyTheme(theme) {
+        var nextTheme = normalizeTheme(theme);
+        document.body.classList.toggle('theme-night', nextTheme === 'night');
+      }
+
+      function setTheme(theme, shouldBroadcast) {
+        var nextTheme = normalizeTheme(theme);
+        try {
+          localStorage.setItem(THEME_KEY, nextTheme);
+        } catch (error) {}
+        applyTheme(nextTheme);
+        if (shouldBroadcast) {
+          emit(THEME_EVENT, { theme: nextTheme });
+        }
+      }
+
+      function toggleTheme() {
+        var currentTheme = document.body.classList.contains('theme-night') ? 'night' : 'day';
+        setTheme(currentTheme === 'night' ? 'day' : 'night', true);
+      }
+
+      function updateMode() {
+        q('xy-mode').textContent = MODE_META[mode].label;
+      }
+
+      function toggleMode() {
+        mode = MODES[(MODES.indexOf(mode) + 1) % MODES.length];
+        try {
+          localStorage.setItem(MODE_KEY, mode);
+        } catch (error) {}
+        updateMode();
+      }
+
+      function setCollapsed(value) {
+        collapsed = !!value;
+        q('xy-shell').classList.toggle('collapsed', collapsed);
+      }
+
+      function parseOptions(optionsString) {
+        return String(optionsString || '')
+          .split('|')
+          .map(function (option) { return option.trim(); })
+          .filter(Boolean);
+      }
+
+      function createOptions(optionsString) {
+        var grid = q('xy-grid');
+        var empty = q('xy-empty');
+        var options = parseOptions(optionsString);
+        grid.innerHTML = '';
+        empty.hidden = options.length > 0;
+
+        options.forEach(function (option, index) {
+          var item = document.createElement('button');
+          item.className = 'xy-option';
+          item.type = 'button';
+          item.dataset.text = option;
+          item.dataset.index = String(index + 1).padStart(2, '0');
+          item.textContent = option;
+          item.style.animationDelay = index * 0.055 + 's';
+          grid.appendChild(item);
+        });
+
+        if (options.length % 2 === 1 && grid.lastElementChild) {
+          grid.lastElementChild.style.gridColumn = '1 / -1';
+        }
+      }
+
+      function getCurrentInput() {
+        try {
+          var jq = window.parent && window.parent.$ ? window.parent.$ : window.$;
+          return jq ? (jq('#send_textarea').val() || '') : '';
+        } catch (error) {
+          return '';
+        }
+      }
+
+      function triggerOption(text) {
+        var content = String(text || '').trim();
+        if (!content || content === '...' || content === '…') return;
+
+        if (typeof triggerSlash === 'function') {
+          if (mode === 'send') {
+            triggerSlash('/send ' + content + '|/trigger');
+          } else if (mode === 'setinput') {
+            triggerSlash('/setinput ' + content);
+          } else {
+            var currentInput = getCurrentInput();
+            triggerSlash('/setinput ' + (currentInput ? currentInput + '\n' + content : content));
+          }
+        }
+
+        if (mode !== 'append') {
+          setCollapsed(true);
+          try {
+            localStorage.setItem('mvu-st-collapsed', 'true');
+          } catch (error) {}
+          emit(COLLAPSE_EVENT, { collapsed: true });
+        }
+      }
+
+      function readOptionsSource() {
+        var source = q('xy-options-source');
+        var inline = source ? (source.textContent || '').trim() : '';
+        if (inline && inline !== '$1') return inline;
+
+        try {
+          var messages = getChatMessages(getCurrentMessageId());
+          var raw = messages && messages[0] ? messages[0].message : '';
+          var match = raw.match(/<options>([\s\S]*?)<\/options>/i);
+          inline = match ? match[1] : '';
+        } catch (error) {
+          console.warn('[xy-options] 读取选项失败:', error);
+          inline = '';
+        }
+        return inline;
+      }
+
+      listen(THEME_EVENT, function (event) {
+        applyTheme(event.detail && event.detail.theme);
+      });
+
+      window.addEventListener('storage', function (event) {
+        if (event.key === THEME_KEY) {
+          applyTheme(event.newValue || 'day');
+        }
+      });
+
+      setTimeout(function () {
+        q('xy-theme').addEventListener('click', function (event) {
+          event.stopPropagation();
+          toggleTheme();
+        });
+
+        q('xy-mode').addEventListener('click', function (event) {
+          event.stopPropagation();
+          toggleMode();
+        });
+
+        q('xy-collapse').addEventListener('click', function (event) {
+          event.stopPropagation();
+          setCollapsed(!collapsed);
+        });
+
+        q('xy-header').addEventListener('click', function (event) {
+          if (event.target.closest('.xy-controls')) return;
+          setCollapsed(!collapsed);
+        });
+
+        q('xy-grid').addEventListener('click', function (event) {
+          var item = event.target.closest('.xy-option');
+          if (!item) return;
+          item.classList.add('sending');
+          setTimeout(function () {
+            item.classList.remove('sending');
+          }, 360);
+          triggerOption(item.dataset.text || item.textContent || '');
+        });
+
+        try {
+          var savedTheme = localStorage.getItem(THEME_KEY) || 'day';
+          var savedMode = localStorage.getItem(MODE_KEY);
+          if (MODE_META[savedMode]) mode = savedMode;
+          setTheme(savedTheme, false);
+        } catch (error) {
+          applyTheme('day');
+        }
+
+        updateMode();
+        createOptions(readOptionsSource());
+        setCollapsed(false);
+      }, 0);
+    })();
+  </script>
+</body>
+</html>
