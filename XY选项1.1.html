@@ -436,7 +436,10 @@
 
   <script>
     (function () {
-      var root = document.currentScript.previousElementSibling;
+      var scriptEl = document.currentScript;
+      var root = scriptEl && scriptEl.previousElementSibling
+        ? scriptEl.previousElementSibling
+        : document.querySelectorAll('#xy-options-root')[document.querySelectorAll('#xy-options-root').length - 1];
       var THEME_KEY = 'mvu-st-theme';
       var MODE_KEY = 'mvu-st-option-mode';
       var THEME_EVENT = 'mvu-st-theme-change';
@@ -581,16 +584,20 @@
       }
 
       function readOptionsSource() {
+        if (typeof window.__xy_options_source === 'string' && window.__xy_options_source.trim()) {
+          return window.__xy_options_source.trim();
+        }
+
         var source = q('#xy-options-source');
         var inline = source ? (source.textContent || '').trim() : '';
         if (inline && inline !== '$1') return inline;
 
         try {
-          var messages = getChatMessages(getCurrentMessageId());
-          var raw = messages && messages[0] ? messages[0].message : '';
-          var match = raw.match(/<options>((?:(?!<options>).)*?)<\/options>/s);
+          var chatMessage = getChatMessages(getCurrentMessageId())[0];
+          var match = chatMessage.message.match(/<options>((?:(?!<options>).)*?)<\/options>/s);
           return match ? match[1] : '';
         } catch (error) {
+          console.warn('[xy-options] 读取选项失败:', error);
           return '';
         }
       }
@@ -635,18 +642,20 @@
         }
       });
 
-      try {
-        var savedTheme = localStorage.getItem(THEME_KEY) || 'day';
-        var savedMode = localStorage.getItem(MODE_KEY);
-        if (MODE_META[savedMode]) mode = savedMode;
-        setTheme(savedTheme, false);
-      } catch (error) {
-        applyTheme('day');
-      }
+      setTimeout(function () {
+        try {
+          var savedTheme = localStorage.getItem(THEME_KEY) || 'day';
+          var savedMode = localStorage.getItem(MODE_KEY);
+          if (MODE_META[savedMode]) mode = savedMode;
+          setTheme(savedTheme, false);
+        } catch (error) {
+          applyTheme('day');
+        }
 
-      updateMode();
-      createOptions(readOptionsSource());
-      setCollapsed(false);
+        updateMode();
+        createOptions(readOptionsSource());
+        setCollapsed(false);
+      }, 0);
     })();
   </script>
 </body>
