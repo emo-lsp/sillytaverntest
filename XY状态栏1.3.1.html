@@ -501,14 +501,14 @@
         function getEmotionBackground(emotion) {
             const emotionStr = String(emotion).trim();
             const map = {
-                '撒娇': 'https://gitgud.io/opus5/other/-/raw/master/Xue_Yin/%E6%92%92%E5%A8%87.jpeg',
-                '委屈': 'https://gitgud.io/opus5/other/-/raw/master/Xue_Yin/%E5%A7%94%E5%B1%88.jpeg',
-                '倔强': 'https://gitgud.io/opus5/other/-/raw/master/Xue_Yin/%E5%80%94%E5%BC%BA.jpeg',
-                '害羞': 'https://gitgud.io/opus5/other/-/raw/master/Xue_Yin/%E5%AE%B3%E7%BE%9E.jpeg',
-                '兴奋': 'https://gitgud.io/opus5/other/-/raw/master/Xue_Yin/%E5%85%B4%E5%A5%8B.jpeg',
-                '安静': 'https://gitgud.io/opus5/other/-/raw/master/Xue_Yin/%E5%AE%89%E9%9D%99.jpeg',
-                '焦虑': 'https://gitgud.io/opus5/other/-/raw/master/Xue_Yin/%E7%84%A6%E8%99%91.jpeg',
-                '开心': 'https://gitgud.io/opus5/other/-/raw/master/Xue_Yin/%E5%BC%80%E5%BF%83.jpeg',
+                '撒娇': 'https://testingcf.jsdelivr.net/gh/emo-lsp/ST_CG@refs/heads/main/Xue_Yin/%E6%92%92%E5%A8%87.jpeg',
+                '委屈': 'https://testingcf.jsdelivr.net/gh/emo-lsp/ST_CG@refs/heads/main/Xue_Yin/%E5%A7%94%E5%B1%88.jpeg',
+                '倔强': 'https://testingcf.jsdelivr.net/gh/emo-lsp/ST_CG@refs/heads/main/Xue_Yin/%E5%80%94%E5%BC%BA.jpeg',
+                '害羞': 'https://testingcf.jsdelivr.net/gh/emo-lsp/ST_CG@refs/heads/main/Xue_Yin/%E5%AE%B3%E7%BE%9E.jpeg',
+                '兴奋': 'https://testingcf.jsdelivr.net/gh/emo-lsp/ST_CG@refs/heads/main/Xue_Yin/%E5%85%B4%E5%A5%8B.jpeg',
+                '安静': 'https://testingcf.jsdelivr.net/gh/emo-lsp/ST_CG@refs/heads/main/Xue_Yin/%E5%AE%89%E9%9D%99.jpeg',
+                '焦虑': 'https://testingcf.jsdelivr.net/gh/emo-lsp/ST_CG@refs/heads/main/Xue_Yin/%E7%84%A6%E8%99%91.jpeg',
+                '开心': 'https://testingcf.jsdelivr.net/gh/emo-lsp/ST_CG@refs/heads/main/Xue_Yin/%E5%BC%80%E5%BF%83.jpeg',
             };
             const url = map[emotionStr] || map['安静'];
             return `url('${url}')`;
