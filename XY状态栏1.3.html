@@ -89,12 +89,16 @@
             display: flex;
             gap: 8px;
             opacity: 0;
-            transition: opacity 0.3s var(--st-ease);
+            pointer-events: none;
+            transform: translateY(-4px);
+            transition: opacity 0.3s var(--st-ease), transform 0.3s var(--st-ease);
         }
 
-        .st-polaroid:hover .st-header,
+        .st-polaroid.controls-visible .st-header,
         .st-header:focus-within {
             opacity: 1;
+            pointer-events: auto;
+            transform: translateY(0);
         }
 
         .st-btn {
@@ -247,38 +251,41 @@
 
         /* 女儿的想法：手写批注区 */
         .st-thought-section {
-            padding: 8px 12px;
+            padding: 8px 18px 10px;
         }
 
         .st-thought-text {
             font-family: var(--st-font-hand);
-            font-size: 1.1rem;
-            line-height: 1.6;
+            font-size: 1rem;
+            line-height: 1.68;
             color: var(--st-text-main);
             position: relative;
+            padding: 0 24px;
         }
 
         /* 批注引号装饰 */
+        .st-thought-text::before,
+        .st-thought-text::after {
+            position: absolute;
+            font-family: var(--st-font-serif);
+            font-size: 2.15rem;
+            font-weight: 700;
+            line-height: 1;
+            color: color-mix(in srgb, var(--st-accent) 58%, var(--st-border));
+            opacity: 0.74;
+            text-shadow: 0 1px 0 var(--st-photo-border);
+        }
+
         .st-thought-text::before {
             content: '“';
-            position: absolute;
-            left: -12px;
-            top: -4px;
-            font-family: var(--st-font-serif);
-            font-size: 1.5rem;
-            color: var(--st-border);
+            left: 0;
+            top: -10px;
         }
 
         .st-thought-text::after {
             content: '”';
-            font-family: var(--st-font-serif);
-            font-size: 1.5rem;
-            color: var(--st-border);
-            vertical-align: bottom;
-            line-height: 0;
-            position: relative;
-            top: 10px;
-            margin-left: 4px;
+            right: 0;
+            bottom: -14px;
         }
 
         /* 冲印信息区：底部便签票据 */
@@ -457,8 +464,13 @@
                 border-right: none;
                 box-shadow: 0 4px 15px rgba(0,0,0,0.1);
             }
-            .st-header {
-                opacity: 1; /* 移动端始终显示控制钮 */
+            .st-thought-section {
+                padding-left: 12px;
+                padding-right: 12px;
+            }
+            .st-thought-text {
+                font-size: 0.96rem;
+                padding: 0 22px;
             }
         }
 
@@ -602,6 +614,18 @@
         async function init() {
             /* 必须等待 MVU 初始化 */
             await waitGlobalInitialized('Mvu');
+            const $polaroid = $('#st-polaroid');
+            let controlsTimer = null;
+            const hideControlsLater = () => {
+                clearTimeout(controlsTimer);
+                controlsTimer = setTimeout(() => {
+                    $polaroid.removeClass('controls-visible');
+                }, 2600);
+            };
+            const showControls = () => {
+                $polaroid.addClass('controls-visible');
+                hideControlsLater();
+            };
 
             /* 1. 处理主题切换 */
             const applyTheme = (isNight) => {
@@ -627,11 +651,12 @@
 
             $('#btn-theme').on('click', () => {
                 setTheme(isNight ? 'day' : 'night', true);
+                showControls();
             });
 
             /* 2. 处理折叠切换 */
             const applyCollapse = (collapsed) => {
-                $('#st-polaroid').toggleClass('collapsed', collapsed);
+                $polaroid.toggleClass('collapsed', collapsed);
             };
             const setCollapse = (collapsed) => {
                 isCollapsed = !!collapsed;
@@ -643,6 +668,12 @@
 
             $('#btn-collapse').on('click', () => {
                 setCollapse(!isCollapsed);
+                showControls();
+            });
+
+            $polaroid.on('click touchstart pointerdown', (event) => {
+                if ($(event.target).closest('.st-btn').length) return;
+                showControls();
             });
 
             const onThemeEvent = (event) => setTheme(event.detail?.theme || 'day');
