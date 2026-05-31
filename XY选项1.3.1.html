@@ -1,9 +1,5 @@
-<!doctype html>
-<html lang="zh-CN">
-<head>
-  <meta charset="UTF-8" />
   <style>
-    :root {
+    .xy-options {
       --st-bg: transparent;
       --st-paper: #faf8f5;
       --st-border: #e6e2db;
@@ -21,9 +17,19 @@
       --st-font-serif: "Songti SC", "Noto Serif CJK SC", "STSong", serif;
       --st-font-hand: "Kaiti SC", "STKaiti", "KaiTi", cursive;
       --st-ease: cubic-bezier(0.19, 1, 0.22, 1);
+      box-sizing: border-box;
+      width: 100%;
+      max-width: 552px;
+      margin: 0 auto;
+      padding: 14px 16px;
+      position: relative;
+      color: var(--st-text-main);
+      font-family: var(--st-font-sans);
+      animation: xy-pop 0.55s var(--st-ease) both;
+      -webkit-font-smoothing: antialiased;
     }
 
-    body.theme-night {
+    .xy-options.theme-night {
       --st-paper: #282a30;
       --st-border: #3f424a;
       --st-border-strong: rgba(255, 255, 255, 0.06);
@@ -37,31 +43,13 @@
       --st-photo-border: #1e1f24;
     }
 
-    * {
+    .xy-options,
+    .xy-options * {
       box-sizing: border-box;
     }
 
-    body {
-      margin: 0;
-      padding: 14px 16px;
-      background: var(--st-bg);
-      color: var(--st-text-main);
-      font-family: var(--st-font-sans);
-      display: flex;
-      justify-content: center;
-      transition: color 0.4s var(--st-ease);
-      -webkit-font-smoothing: antialiased;
-    }
-
-    ::-webkit-scrollbar {
+    .xy-options ::-webkit-scrollbar {
       display: none;
-    }
-
-    .xy-options {
-      width: 100%;
-      max-width: 520px;
-      position: relative;
-      animation: xy-pop 0.55s var(--st-ease) both;
     }
 
     .xy-shell {
@@ -86,7 +74,7 @@
       pointer-events: none;
     }
 
-    body.theme-night .xy-shell::before {
+    .xy-options.theme-night .xy-shell::before {
       background-image:
         linear-gradient(180deg, rgba(255, 255, 255, 0.04), transparent 34%),
         repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.035) 0, rgba(255, 255, 255, 0.035) 1px, transparent 1px, transparent 26px);
@@ -339,7 +327,7 @@
     }
 
     @media (max-width: 480px) {
-      body {
+      .xy-options {
         padding: 10px 8px;
       }
 
@@ -365,16 +353,17 @@
     }
 
     @media (prefers-reduced-motion: reduce) {
-      *, *::before, *::after {
+      .xy-options,
+      .xy-options *,
+      .xy-options *::before,
+      .xy-options *::after {
         animation-duration: 1ms !important;
         animation-iteration-count: 1 !important;
         transition-duration: 1ms !important;
       }
     }
   </style>
-</head>
-<body>
-  <div class="xy-options" id="xy-options-root">
+  <div class="xy-options" data-xy-options>
     <div class="xy-ticket-charm" aria-hidden="true">
       <svg viewBox="0 0 58 74" fill="none" xmlns="http://www.w3.org/2000/svg">
         <circle cx="29" cy="8" r="6" fill="none" stroke="var(--st-text-muted)" stroke-width="1.4" opacity="0.55"/>
@@ -386,36 +375,44 @@
       </svg>
     </div>
 
-    <section class="xy-shell" id="xy-shell">
-      <header class="xy-header" id="xy-header">
+    <section class="xy-shell" data-xy-role="shell">
+      <header class="xy-header" data-xy-role="header">
         <div class="xy-title-block">
           <h2 class="xy-title">行动选项</h2>
           <span class="xy-subtitle">XUE YIN NOTE</span>
         </div>
         <div class="xy-controls">
-          <button class="xy-mode" id="xy-mode" type="button">追加输入</button>
-          <button class="xy-btn" id="xy-theme" type="button" aria-label="切换主题" title="切换昼夜">
+          <button class="xy-mode" data-xy-role="mode" type="button">追加输入</button>
+          <button class="xy-btn" data-xy-role="theme" type="button" aria-label="切换主题" title="切换昼夜">
             <svg viewBox="0 0 24 24"><path d="M12 3a9 9 0 1 0 9 9c0-.46-.04-.92-.1-1.36a5.389 5.389 0 0 1-4.4 2.26 5.403 5.403 0 0 1-3.14-9.8c-.44-.06-.9-.1-1.36-.1z"/></svg>
           </button>
-          <button class="xy-btn" id="xy-collapse" type="button" aria-label="收起/展开" title="收起/展开选项">
+          <button class="xy-btn" data-xy-role="collapse" type="button" aria-label="收起/展开" title="收起/展开选项">
             <svg class="xy-collapse-icon" viewBox="0 0 24 24"><path d="M16 8l-4 4-4-4-1.41 1.41L12 15.24l5.41-5.41z"/></svg>
           </button>
         </div>
       </header>
 
-      <div class="xy-body" id="xy-body">
+      <div class="xy-body" data-xy-role="body">
         <div class="xy-body-inner">
-          <div class="xy-grid" id="xy-grid"></div>
-          <div class="xy-empty" id="xy-empty" hidden>当前楼层没有可用选项。</div>
+          <div class="xy-grid" data-xy-role="grid"></div>
+          <div class="xy-empty" data-xy-role="empty" hidden>当前楼层没有可用选项。</div>
         </div>
       </div>
     </section>
 
-    <div id="xy-options-source" hidden>$1</div>
+    <div data-xy-role="source" hidden>$1</div>
   </div>
 
   <script>
     (function () {
+      var currentScript = document.currentScript;
+      var root = currentScript ? currentScript.previousElementSibling : null;
+      if (!root || !root.matches || !root.matches('[data-xy-options]')) {
+        var roots = document.querySelectorAll('[data-xy-options]');
+        root = roots[roots.length - 1];
+      }
+      if (!root) return;
+
       var THEME_KEY = 'mvu-st-theme';
       var MODE_KEY = 'mvu-st-option-mode';
       var THEME_EVENT = 'mvu-st-theme-change';
@@ -429,8 +426,8 @@
       var mode = 'append';
       var collapsed = false;
 
-      function q(id) {
-        return document.getElementById(id);
+      function q(role) {
+        return root.querySelector('[data-xy-role="' + role + '"]');
       }
 
       function normalizeTheme(theme) {
@@ -459,7 +456,7 @@
 
       function applyTheme(theme) {
         var nextTheme = normalizeTheme(theme);
-        document.body.classList.toggle('theme-night', nextTheme === 'night');
+        root.classList.toggle('theme-night', nextTheme === 'night');
       }
 
       function setTheme(theme, shouldBroadcast) {
@@ -474,12 +471,12 @@
       }
 
       function toggleTheme() {
-        var currentTheme = document.body.classList.contains('theme-night') ? 'night' : 'day';
+        var currentTheme = root.classList.contains('theme-night') ? 'night' : 'day';
         setTheme(currentTheme === 'night' ? 'day' : 'night', true);
       }
 
       function updateMode() {
-        q('xy-mode').textContent = MODE_META[mode].label;
+        q('mode').textContent = MODE_META[mode].label;
       }
 
       function toggleMode() {
@@ -492,7 +489,7 @@
 
       function setCollapsed(value) {
         collapsed = !!value;
-        q('xy-shell').classList.toggle('collapsed', collapsed);
+        q('shell').classList.toggle('collapsed', collapsed);
       }
 
       function parseOptions(optionsString) {
@@ -503,8 +500,8 @@
       }
 
       function createOptions(optionsString) {
-        var grid = q('xy-grid');
-        var empty = q('xy-empty');
+        var grid = q('grid');
+        var empty = q('empty');
         var options = parseOptions(optionsString);
         grid.innerHTML = '';
         empty.hidden = options.length > 0;
@@ -559,7 +556,7 @@
       }
 
       function readOptionsSource() {
-        var source = q('xy-options-source');
+        var source = q('source');
         var inline = source ? (source.textContent || '').trim() : '';
         if (inline && inline !== '$1') return inline;
 
@@ -586,27 +583,27 @@
       });
 
       setTimeout(function () {
-        q('xy-theme').addEventListener('click', function (event) {
+        q('theme').addEventListener('click', function (event) {
           event.stopPropagation();
           toggleTheme();
         });
 
-        q('xy-mode').addEventListener('click', function (event) {
+        q('mode').addEventListener('click', function (event) {
           event.stopPropagation();
           toggleMode();
         });
 
-        q('xy-collapse').addEventListener('click', function (event) {
+        q('collapse').addEventListener('click', function (event) {
           event.stopPropagation();
           setCollapsed(!collapsed);
         });
 
-        q('xy-header').addEventListener('click', function (event) {
+        q('header').addEventListener('click', function (event) {
           if (event.target.closest('.xy-controls')) return;
           setCollapsed(!collapsed);
         });
 
-        q('xy-grid').addEventListener('click', function (event) {
+        q('grid').addEventListener('click', function (event) {
           var item = event.target.closest('.xy-option');
           if (!item) return;
           item.classList.add('sending');
@@ -631,5 +628,3 @@
       }, 0);
     })();
   </script>
-</body>
-</html>
