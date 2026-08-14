@@ -1502,8 +1502,8 @@
           try {
             const root = document.scrollingElement || document.documentElement;
             root.scrollTop = 0;
-            if (typeof root.scrollTo === 'function') root.scrollTo(0, 0);
             if (document.body) document.body.scrollTop = 0;
+            home?.scrollIntoView?.({ block: 'start', behavior: 'auto' });
           } catch (_) {}
           portraitButtons[0]?.focus({ preventScroll: true });
         });
