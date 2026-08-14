@@ -1499,19 +1499,12 @@
           document.body.classList.remove('is-copyright-gated');
           home?.classList.remove('is-copyright-gated');
           unlockScroll();
-          const scrollTopAll = scope => {
-            if (!scope || typeof scope.scrollTo !== 'function') return;
-            try {
-              scope.scrollTo(0, 0);
-              const doc = scope.document;
-              if (doc) {
-                doc.scrollingElement?.scrollTo?.(0, 0);
-                doc.documentElement.scrollTop = 0;
-                doc.body.scrollTop = 0;
-              }
-            } catch (_) {}
-          };
-          [window, window.parent, window.top].forEach(scrollTopAll);
+          try {
+            const root = document.scrollingElement || document.documentElement;
+            root.scrollTop = 0;
+            if (typeof root.scrollTo === 'function') root.scrollTo(0, 0);
+            if (document.body) document.body.scrollTop = 0;
+          } catch (_) {}
           portraitButtons[0]?.focus({ preventScroll: true });
         });
 
