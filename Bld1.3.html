@@ -331,7 +331,7 @@
         z-index: 1;
         grid-template-columns: minmax(0, 1fr) 42px 42px;
         gap: 8px;
-        padding: 7px 2px 9px;
+        padding: 7px 8px 9px;
       }
 
       .mode-key,
@@ -570,7 +570,227 @@
         }
       }
 
+      .tutorial {
+        position: absolute;
+        inset: 0;
+        z-index: 40;
+        display: flex;
+        align-items: flex-end;
+        justify-content: center;
+        padding: 14px;
+        border-radius: inherit;
+        pointer-events: none;
+      }
+
+      .tutorial[hidden] {
+        display: none;
+      }
+
+      .tutorial__shade {
+        position: absolute;
+        inset: 0;
+        z-index: 40;
+        border-radius: inherit;
+        background: rgba(18, 18, 15, 0.62);
+        backdrop-filter: blur(1.5px);
+        pointer-events: auto;
+        animation: tutorial-shade-in 0.2s ease;
+      }
+
+      .tutorial__panel {
+        position: relative;
+        z-index: 60;
+        width: min(100%, 390px);
+        padding: 15px 16px 14px;
+        overflow: hidden;
+        border: 1px solid var(--card-border);
+        border-radius: 10px;
+        background-color: var(--card);
+        background-image:
+          linear-gradient(rgba(91, 78, 55, 0.025) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(91, 78, 55, 0.018) 1px, transparent 1px);
+        background-size: 5px 5px;
+        box-shadow:
+          0 14px 32px rgba(0, 0, 0, 0.34),
+          inset 0 1px 0 rgba(255, 255, 255, 0.68);
+        color: var(--text);
+        pointer-events: auto;
+        outline: none;
+        animation: tutorial-panel-in 0.32s cubic-bezier(0.22, 1, 0.36, 1);
+      }
+
+      .tutorial__panel::before {
+        position: absolute;
+        top: 0;
+        right: 0;
+        left: 0;
+        height: 5px;
+        content: '';
+        background: linear-gradient(90deg, var(--green) 0 33%, var(--orange) 33% 66%, var(--red) 66% 100%);
+      }
+
+      .tutorial__progress {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 5px;
+        margin-bottom: 11px;
+        padding-top: 2px;
+      }
+
+      .tutorial__progress span {
+        height: 3px;
+        border-radius: 999px;
+        background: var(--line);
+        transition: background-color 0.2s ease;
+      }
+
+      .tutorial__progress span.active {
+        background: var(--orange);
+      }
+
+      .tutorial__copy {
+        animation: tutorial-copy-in 0.24s ease;
+      }
+
+      .tutorial__step {
+        display: block;
+        margin-bottom: 3px;
+        color: var(--green);
+        font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+        font-size: 10px;
+        font-weight: 800;
+        letter-spacing: 0.1em;
+      }
+
+      .tutorial__title {
+        margin: 0;
+        font-size: 18px;
+        line-height: 1.35;
+      }
+
+      .tutorial__description {
+        min-height: 2.8em;
+        margin-top: 4px;
+        color: var(--muted);
+        font-size: 13px;
+        line-height: 1.55;
+      }
+
+      .tutorial__actions {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        margin-top: 12px;
+      }
+
+      .tutorial__navigation {
+        display: flex;
+        gap: 7px;
+      }
+
+      .tutorial__button {
+        min-width: 74px;
+        min-height: 44px;
+        padding: 7px 12px;
+        appearance: none;
+        border: 1px solid var(--key-border);
+        border-radius: 5px;
+        color: var(--text);
+        background: linear-gradient(180deg, var(--key-top), var(--key-bottom));
+        box-shadow: 0 2px 0 var(--key-shadow);
+        font-size: 12px;
+        font-weight: 700;
+        cursor: pointer;
+        touch-action: manipulation;
+        transition:
+          color 0.18s ease,
+          border-color 0.18s ease,
+          filter 0.18s ease,
+          box-shadow 0.12s ease;
+      }
+
+      .tutorial__button:hover:not(:disabled) {
+        filter: brightness(1.05);
+      }
+
+      .tutorial__button:active:not(:disabled) {
+        box-shadow: 0 0 0 var(--key-shadow);
+        transform: translateY(2px);
+      }
+
+      .tutorial__button:focus-visible {
+        outline: 2px solid var(--focus);
+        outline-offset: 2px;
+      }
+
+      .tutorial__button:disabled {
+        opacity: 0.38;
+        cursor: default;
+      }
+
+      .tutorial__button--skip {
+        min-width: 58px;
+        border-color: transparent;
+        color: var(--muted);
+        background: transparent;
+        box-shadow: none;
+      }
+
+      .tutorial__button--primary {
+        border-color: #a84c0c;
+        color: #fff;
+        background: linear-gradient(180deg, #ed812d, #bd5414);
+        box-shadow: 0 2px 0 #86370d;
+      }
+
+      .options-shell--tutorial .tutorial-target {
+        position: relative;
+        z-index: 50;
+        border-radius: 4px;
+        box-shadow:
+          0 0 0 3px var(--card),
+          0 0 0 6px var(--orange),
+          0 0 18px rgba(245, 130, 32, 0.62);
+        pointer-events: none;
+      }
+
+      @keyframes tutorial-shade-in {
+        from {
+          opacity: 0;
+        }
+        to {
+          opacity: 1;
+        }
+      }
+
+      @keyframes tutorial-panel-in {
+        from {
+          opacity: 0;
+          transform: translateY(16px) scale(0.97);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0) scale(1);
+        }
+      }
+
+      @keyframes tutorial-copy-in {
+        from {
+          opacity: 0;
+          transform: translateX(8px);
+        }
+        to {
+          opacity: 1;
+          transform: translateX(0);
+        }
+      }
+
       @media (max-width: 480px) {
+        .tutorial {
+          padding: 10px;
+        }
+
         .options-shell {
           padding: 6px;
           border-radius: 12px;
@@ -595,6 +815,7 @@
         .ctrl-bar {
           grid-template-columns: minmax(0, 1fr) 40px 40px;
           gap: 6px;
+          padding: 7px 4px 9px;
         }
 
         .mode-key,
@@ -689,6 +910,34 @@
           <div class="options-empty" id="options-empty" hidden>当前楼层没有可用选项。</div>
         </div>
       </div>
+
+      <div class="tutorial" id="tutorial" hidden>
+        <div class="tutorial__shade" aria-hidden="true"></div>
+        <div
+          class="tutorial__panel"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="tutorial-title"
+          aria-describedby="tutorial-description"
+          tabindex="-1"
+        >
+          <div class="tutorial__progress" aria-hidden="true">
+            <span></span><span></span><span></span>
+          </div>
+          <div class="tutorial__copy" id="tutorial-copy">
+            <span class="tutorial__step" id="tutorial-step"></span>
+            <h2 class="tutorial__title" id="tutorial-title"></h2>
+            <p class="tutorial__description" id="tutorial-description"></p>
+          </div>
+          <div class="tutorial__actions">
+            <button type="button" class="tutorial__button tutorial__button--skip" id="tutorial-skip">跳过</button>
+            <div class="tutorial__navigation">
+              <button type="button" class="tutorial__button" id="tutorial-prev">上一步</button>
+              <button type="button" class="tutorial__button tutorial__button--primary" id="tutorial-next">下一步</button>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
 
     <div id="options-source" hidden>$1</div>
@@ -705,6 +954,14 @@
         setinput: { label: '仅输入', number: '02' },
         append: { label: '追加输入', number: '03' },
       };
+      var TUTORIAL_STORAGE_KEY = 'yjb-pos-mode-tutorial-v1';
+      var TUTORIAL_STEPS = [
+        { title: '直接发送', description: '点击选项后，内容会直接作为消息发出，并自动请求 AI 回复。' },
+        { title: '仅输入', description: '点击选项后，内容只填入输入框，不自动发送，方便修改后再发出。' },
+        { title: '追加输入', description: '点击选项后，内容会换行追加到输入框已有文字之后，不自动发送。' },
+      ];
+      var tutorialStep = 0;
+      var tutorialVisible = false;
       var SUN_ICON =
         '<svg class="key__icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3.5" /><path d="M12 2.5v2M12 19.5v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2.5 12h2M19.5 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4" /></svg>';
       var MOON_ICON =
@@ -848,6 +1105,94 @@
         }
       }
 
+      function hasSeenTutorial() {
+        try {
+          return localStorage.getItem(TUTORIAL_STORAGE_KEY) === 'true';
+        } catch (error) {
+          return true;
+        }
+      }
+
+      function renderTutorial() {
+        var step = TUTORIAL_STEPS[tutorialStep];
+        document.getElementById('tutorial-step').textContent =
+          '模式教程 · ' + (tutorialStep + 1) + '/' + TUTORIAL_STEPS.length;
+        document.getElementById('tutorial-title').textContent = step.title;
+        document.getElementById('tutorial-description').textContent = step.description;
+        var bars = document.querySelectorAll('#tutorial .tutorial__progress span');
+        for (var i = 0; i < bars.length; i += 1) {
+          bars[i].classList.toggle('active', i === tutorialStep);
+        }
+        document.getElementById('tutorial-prev').disabled = tutorialStep === 0;
+        document.getElementById('tutorial-next').textContent =
+          tutorialStep === TUTORIAL_STEPS.length - 1 ? '完成' : '下一步';
+        var copy = document.getElementById('tutorial-copy');
+        copy.style.animation = 'none';
+        void copy.offsetWidth;
+        copy.style.animation = '';
+      }
+
+      function startTutorial() {
+        if (tutorialVisible || hasSeenTutorial()) return;
+        tutorialVisible = true;
+        tutorialStep = 0;
+        try {
+          localStorage.setItem(TUTORIAL_STORAGE_KEY, 'true');
+        } catch (error) {}
+        document.getElementById('options-shell').classList.add('options-shell--tutorial');
+        document.getElementById('mode-btn').classList.add('tutorial-target');
+        document.getElementById('tutorial').hidden = false;
+        renderTutorial();
+        document.querySelector('#tutorial .tutorial__panel').focus({ preventScroll: true });
+      }
+
+      function finishTutorial() {
+        if (!tutorialVisible) return;
+        tutorialVisible = false;
+        document.getElementById('options-shell').classList.remove('options-shell--tutorial');
+        document.getElementById('mode-btn').classList.remove('tutorial-target');
+        document.getElementById('tutorial').hidden = true;
+        document.getElementById('mode-btn').focus({ preventScroll: true });
+      }
+
+      function nextTutorialStep() {
+        if (tutorialStep >= TUTORIAL_STEPS.length - 1) {
+          finishTutorial();
+          return;
+        }
+        tutorialStep += 1;
+        renderTutorial();
+      }
+
+      function previousTutorialStep() {
+        if (tutorialStep > 0) {
+          tutorialStep -= 1;
+          renderTutorial();
+        }
+      }
+
+      function handleTutorialKeydown(event) {
+        if (!tutorialVisible) return;
+        if (event.key === 'Escape') {
+          event.preventDefault();
+          finishTutorial();
+          return;
+        }
+        if (event.key !== 'Tab') return;
+        var panel = document.querySelector('#tutorial .tutorial__panel');
+        var controls = Array.prototype.slice.call(panel.querySelectorAll('button:not(:disabled)'));
+        if (!controls.length) return;
+        var first = controls[0];
+        var last = controls[controls.length - 1];
+        if (event.shiftKey && document.activeElement === first) {
+          event.preventDefault();
+          last.focus();
+        } else if (!event.shiftKey && document.activeElement === last) {
+          event.preventDefault();
+          first.focus();
+        }
+      }
+
       function init() {
         var savedMode = null;
         try {
@@ -858,6 +1203,7 @@
         updateModeUi();
         renderOptions(readOptionsSource());
         setCollapsed(false);
+        startTutorial();
       }
 
       window.addEventListener('storage', function (event) {
@@ -883,6 +1229,11 @@
       document.getElementById('collapse-btn').addEventListener('click', function () {
         setCollapsed(!collapsed);
       });
+
+      document.getElementById('tutorial-skip').addEventListener('click', finishTutorial);
+      document.getElementById('tutorial-prev').addEventListener('click', previousTutorialStep);
+      document.getElementById('tutorial-next').addEventListener('click', nextTutorialStep);
+      document.getElementById('tutorial').addEventListener('keydown', handleTutorialKeydown);
 
       if (typeof $ === 'function') {
         $(init);
