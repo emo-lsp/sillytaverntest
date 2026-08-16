@@ -573,7 +573,6 @@
       .tutorial {
         position: absolute;
         inset: 0;
-        z-index: 40;
         display: flex;
         align-items: flex-end;
         justify-content: center;
@@ -744,6 +743,10 @@
         box-shadow: 0 2px 0 #86370d;
       }
 
+      .options-shell--tutorial .ctrl-bar {
+        z-index: 50;
+      }
+
       .options-shell--tutorial .tutorial-target {
         position: relative;
         z-index: 50;
@@ -788,6 +791,7 @@
 
       @media (max-width: 480px) {
         .tutorial {
+          align-items: flex-start;
           padding: 10px;
         }
 
