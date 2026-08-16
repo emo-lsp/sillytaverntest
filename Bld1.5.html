@@ -792,7 +792,7 @@
       @media (max-width: 480px) {
         .tutorial {
           align-items: flex-start;
-          padding: 10px;
+          padding: var(--tutorial-panel-top, 10px) 10px 10px;
         }
 
         .options-shell {
@@ -1136,6 +1136,21 @@
         copy.style.animation = '';
       }
 
+      function positionTutorialPanel() {
+        var shell = document.getElementById('options-shell');
+        var target = document.getElementById('mode-btn');
+        var tutorial = document.getElementById('tutorial');
+        if (!shell || !target || !tutorial) return;
+        if (window.matchMedia && window.matchMedia('(max-width: 480px)').matches) {
+          var shellRect = shell.getBoundingClientRect();
+          var targetRect = target.getBoundingClientRect();
+          var top = Math.max(10, targetRect.bottom - shellRect.top + 10);
+          tutorial.style.setProperty('--tutorial-panel-top', top + 'px');
+        } else {
+          tutorial.style.removeProperty('--tutorial-panel-top');
+        }
+      }
+
       function startTutorial() {
         if (tutorialVisible || hasSeenTutorial()) return;
         tutorialVisible = true;
@@ -1147,6 +1162,7 @@
         document.getElementById('mode-btn').classList.add('tutorial-target');
         document.getElementById('tutorial').hidden = false;
         renderTutorial();
+        positionTutorialPanel();
         document.querySelector('#tutorial .tutorial__panel').focus({ preventScroll: true });
       }
 
@@ -1156,6 +1172,7 @@
         document.getElementById('options-shell').classList.remove('options-shell--tutorial');
         document.getElementById('mode-btn').classList.remove('tutorial-target');
         document.getElementById('tutorial').hidden = true;
+        document.getElementById('tutorial').style.removeProperty('--tutorial-panel-top');
         document.getElementById('mode-btn').focus({ preventScroll: true });
       }
 
@@ -1238,6 +1255,9 @@
       document.getElementById('tutorial-prev').addEventListener('click', previousTutorialStep);
       document.getElementById('tutorial-next').addEventListener('click', nextTutorialStep);
       document.getElementById('tutorial').addEventListener('keydown', handleTutorialKeydown);
+      window.addEventListener('resize', function () {
+        if (tutorialVisible) positionTutorialPanel();
+      });
 
       if (typeof $ === 'function') {
         $(init);
