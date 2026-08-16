@@ -1,0 +1,894 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>快速回复选项</title>
+    <style>
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      html,
+      body {
+        width: 100%;
+        background: transparent;
+      }
+
+      .options-shell {
+        --green: #08783e;
+        --orange: #f58220;
+        --red: #e4232f;
+        --shell-top: #f4efe4;
+        --shell-bottom: #ddd4c4;
+        --shell-border: #988c78;
+        --card: #fffdf7;
+        --card-border: #cfc3b0;
+        --text: #24251f;
+        --muted: #696457;
+        --faint: #999080;
+        --line: rgba(73, 66, 53, 0.18);
+        --key-top: #fffdf6;
+        --key-bottom: #ded4c2;
+        --key-border: #a99c86;
+        --key-shadow: #857862;
+        --focus: #1976d2;
+        width: min(100%, 640px);
+        max-width: 640px;
+        position: relative;
+        overflow: hidden;
+        margin: 0 auto;
+        padding: 10px;
+        border: 1px solid var(--shell-border);
+        border-radius: 18px;
+        background:
+          linear-gradient(100deg, rgba(255, 255, 255, 0.75), transparent 20%, rgba(117, 103, 80, 0.08) 72%),
+          linear-gradient(180deg, var(--shell-top), var(--shell-bottom));
+        box-shadow:
+          0 12px 28px rgba(42, 35, 24, 0.2),
+          0 2px 5px rgba(42, 35, 24, 0.18),
+          inset 0 2px 1px rgba(255, 255, 255, 0.94),
+          inset 0 -3px 5px rgba(80, 68, 50, 0.16);
+        color: var(--text);
+        font-family: 'SF Pro Text', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+        -webkit-font-smoothing: antialiased;
+        transition:
+          background 0.3s,
+          border-color 0.3s,
+          box-shadow 0.3s,
+          color 0.3s;
+      }
+
+      .options-shell::before,
+      .option-card::after {
+        position: absolute;
+        inset: 0;
+        content: '';
+        pointer-events: none;
+        background-image:
+          linear-gradient(rgba(91, 78, 55, 0.025) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(91, 78, 55, 0.018) 1px, transparent 1px);
+        background-size: 5px 5px;
+        opacity: 0.85;
+      }
+
+      .options-shell--dark {
+        --green: #45bd68;
+        --orange: #d17b2d;
+        --red: #c8464c;
+        --shell-top: #24251f;
+        --shell-bottom: #1c1d19;
+        --shell-border: #4b4a40;
+        --card: #2d2e27;
+        --card-hover: #35362e;
+        --card-border: #48483e;
+        --text: #d8d4c9;
+        --muted: #aaa598;
+        --faint: #7f7b70;
+        --line: rgba(216, 212, 201, 0.14);
+        --key-top: #303129;
+        --key-bottom: #24251f;
+        --key-border: #48483e;
+        --key-shadow: #151612;
+        --focus: #8f9f91;
+        background:
+          linear-gradient(100deg, rgba(255, 255, 255, 0.035), transparent 24%, rgba(0, 0, 0, 0.16) 74%),
+          linear-gradient(180deg, var(--shell-top), var(--shell-bottom));
+        box-shadow:
+          0 10px 24px rgba(0, 0, 0, 0.32),
+          0 2px 4px rgba(0, 0, 0, 0.24),
+          inset 0 1px 0 rgba(255, 255, 255, 0.08),
+          inset 0 -3px 5px rgba(0, 0, 0, 0.18);
+      }
+
+      .options-shell--dark::before,
+      .options-shell--dark .option-card::after {
+        opacity: 0.4;
+      }
+
+      .options-shell--dark .option-card,
+      .options-shell--dark .mode-key,
+      .options-shell--dark .key {
+        box-shadow:
+          0 4px 10px rgba(0, 0, 0, 0.18),
+          inset 0 1px 0 rgba(255, 255, 255, 0.025);
+      }
+
+      .options-shell--dark .option-card {
+        background: linear-gradient(135deg, rgba(255, 255, 255, 0.018), transparent 45%), var(--card);
+      }
+
+      .options-shell--dark .option-card:hover,
+      .options-shell--dark .option-card:focus-visible {
+        border-color: #5a594c;
+        background: var(--card-hover);
+        box-shadow:
+          0 5px 10px rgba(0, 0, 0, 0.22),
+          inset 0 1px 0 rgba(255, 255, 255, 0.035);
+      }
+
+      .options-shell--dark .led {
+        border-color: #737266;
+        background-color: #07140b;
+        background-image:
+          radial-gradient(circle, rgba(69, 189, 104, 0.06) 0 1px, transparent 1.4px),
+          linear-gradient(180deg, rgba(13, 31, 19, 0.7), rgba(3, 12, 6, 0.86));
+        box-shadow:
+          inset 0 0 14px rgba(69, 189, 104, 0.04),
+          inset 0 2px 6px rgba(0, 0, 0, 0.78),
+          0 1px 0 rgba(255, 255, 255, 0.25),
+          0 4px 7px rgba(0, 0, 0, 0.3);
+      }
+
+      .options-shell--dark .led__dot {
+        background: #71d889;
+        box-shadow:
+          0 0 4px rgba(69, 189, 104, 0.28),
+          0 0 8px rgba(69, 189, 104, 0.12);
+      }
+
+      .options-shell--dark .led__brand {
+        color: #71d889;
+        text-shadow:
+          0 0 4px rgba(69, 189, 104, 0.28),
+          0 0 10px rgba(69, 189, 104, 0.12);
+      }
+
+      .options-shell--dark .led__seven {
+        color: #d17b2d;
+        text-shadow: 0 0 4px rgba(209, 123, 45, 0.24);
+      }
+
+      .options-shell--dark .led__store {
+        color: #45bd68;
+        text-shadow:
+          0 0 4px rgba(69, 189, 104, 0.28),
+          0 0 10px rgba(69, 189, 104, 0.12);
+      }
+
+      .options-shell--dark .led__sub {
+        color: #568e67;
+      }
+
+      .options-shell--dark .led__sub b {
+        color: #71d889;
+        text-shadow: 0 0 4px rgba(69, 189, 104, 0.22);
+      }
+
+      .options-shell.is-theme-transitioning {
+        animation: theme-transition 340ms ease-out;
+      }
+
+      @keyframes theme-transition {
+        0% {
+          filter: brightness(1);
+        }
+        40% {
+          filter: brightness(1.06);
+        }
+        100% {
+          filter: brightness(1);
+        }
+      }
+
+      .led {
+        position: relative;
+        overflow: hidden;
+        padding: 8px 16px 7px;
+        border: 3px solid #827a68;
+        border-radius: 10px 10px 3px 3px;
+        background-color: #030b06;
+        background-image:
+          radial-gradient(circle, rgba(34, 225, 72, 0.14) 0 1px, transparent 1.4px),
+          linear-gradient(180deg, rgba(11, 42, 18, 0.5), rgba(0, 8, 3, 0.8));
+        background-size:
+          4px 4px,
+          auto;
+        box-shadow:
+          inset 0 0 24px rgba(0, 255, 71, 0.08),
+          inset 0 2px 6px rgba(0, 0, 0, 0.92),
+          0 1px 0 rgba(255, 255, 255, 0.72),
+          0 4px 7px rgba(61, 52, 37, 0.3);
+        font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+      }
+
+      .led__main {
+        display: flex;
+        position: relative;
+        z-index: 1;
+        align-items: center;
+        justify-content: center;
+        min-height: 26px;
+        gap: 8px;
+        margin-bottom: 4px;
+      }
+
+      .led__dot {
+        width: 7px;
+        height: 7px;
+        flex: 0 0 auto;
+        border-radius: 50%;
+        background: #33ff33;
+        box-shadow:
+          0 0 4px #33ff33,
+          0 0 8px rgba(51, 255, 51, 0.4);
+        animation: blink 1.5s infinite;
+      }
+
+      .led__brand {
+        display: inline-flex;
+        align-items: flex-end;
+        padding: 1px 4px 2px;
+        border-bottom: 2px solid #ff6530;
+        color: #41f165;
+        font-family: Arial, Helvetica, sans-serif;
+        font-weight: 900;
+        line-height: 0.82;
+        text-shadow: 0 0 7px rgba(65, 241, 101, 0.72);
+      }
+
+      .led__seven {
+        color: #ff7138;
+        font-size: 20px;
+        text-shadow: 0 0 7px rgba(255, 113, 56, 0.6);
+      }
+
+      .led__eleven {
+        font-size: 9px;
+      }
+
+      .led__store {
+        color: #33ff33;
+        font-size: 16px;
+        font-weight: 700;
+        letter-spacing: 0.1em;
+        text-shadow:
+          0 0 6px rgba(51, 255, 51, 0.5),
+          0 0 12px rgba(51, 255, 51, 0.2);
+      }
+
+      .led__sub {
+        display: flex;
+        position: relative;
+        z-index: 1;
+        justify-content: space-between;
+        gap: 10px;
+        padding: 3px 6px 0;
+        border-top: 1px solid rgba(73, 255, 100, 0.12);
+        color: #22aa22;
+        font-size: 10px;
+        letter-spacing: 0.16em;
+      }
+
+      .led__sub b {
+        color: #33ff33;
+        font-size: 13px;
+        font-weight: 600;
+        text-shadow: 0 0 4px rgba(51, 255, 51, 0.4);
+      }
+
+      @keyframes blink {
+        0%,
+        100% {
+          opacity: 1;
+        }
+        50% {
+          opacity: 0.2;
+        }
+      }
+
+      .store-stripes {
+        display: grid;
+        grid-template-rows: 3px 2px 3px;
+        gap: 1px;
+        margin: 3px 4px 1px;
+        overflow: hidden;
+        border-radius: 2px;
+        box-shadow: 0 1px 1px rgba(0, 0, 0, 0.16);
+      }
+
+      .store-stripes span {
+        display: block;
+      }
+
+      .store-stripes__green {
+        background: var(--green);
+      }
+
+      .store-stripes__orange {
+        background: var(--orange);
+      }
+
+      .store-stripes__red {
+        background: var(--red);
+      }
+
+      .ctrl-bar {
+        display: grid;
+        position: relative;
+        z-index: 1;
+        grid-template-columns: minmax(0, 1fr) 42px 42px;
+        gap: 8px;
+        padding: 7px 2px 9px;
+      }
+
+      .mode-key,
+      .key {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 0;
+        height: 42px;
+        min-height: 42px;
+        border: 1px solid var(--key-border);
+        border-radius: 7px;
+        background: linear-gradient(180deg, var(--key-top), var(--key-bottom));
+        box-shadow:
+          0 3px 0 var(--key-shadow),
+          0 5px 8px rgba(44, 37, 25, 0.17),
+          inset 0 1px 1px rgba(255, 255, 255, 0.82);
+        color: var(--text);
+        cursor: pointer;
+        touch-action: manipulation;
+        transition:
+          border-color 0.12s,
+          box-shadow 0.12s,
+          transform 0.12s;
+      }
+
+      .mode-key {
+        gap: 8px;
+        padding: 0 12px;
+        font-size: 14px;
+        font-weight: 600;
+      }
+
+      .mode-key__number {
+        display: grid;
+        width: 24px;
+        height: 24px;
+        flex: 0 0 24px;
+        place-items: center;
+        border: 1px solid rgba(73, 66, 53, 0.25);
+        border-radius: 50%;
+        font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+        font-size: 9px;
+        font-weight: 800;
+      }
+
+      .mode-key__label {
+        min-width: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      .key {
+        width: 42px;
+        padding: 0;
+      }
+
+      .mode-key:hover,
+      .key:hover,
+      .mode-key:focus-visible,
+      .key:focus-visible {
+        border-color: var(--focus);
+        outline: none;
+      }
+
+      .mode-key:active,
+      .key:active {
+        box-shadow:
+          0 1px 0 var(--key-shadow),
+          0 2px 3px rgba(0, 0, 0, 0.1);
+        transform: translateY(2px);
+      }
+
+      .key__icon {
+        width: 21px;
+        height: 21px;
+        fill: none;
+        stroke: currentColor;
+        stroke-width: 1.8;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+      }
+
+      .key__arrow {
+        transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+      }
+
+      .options-shell.collapsed .key__arrow {
+        transform: rotate(180deg);
+      }
+
+      .options-body {
+        display: grid;
+        position: relative;
+        z-index: 1;
+        grid-template-rows: 1fr;
+        min-height: 0;
+        overflow: hidden;
+        transition: grid-template-rows 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+      }
+
+      .options-shell.collapsed .options-body {
+        grid-template-rows: 0fr;
+      }
+
+      .options-inner {
+        min-height: 0;
+        overflow: hidden;
+        padding: 0 2px;
+      }
+
+      .options-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 7px;
+        padding: 0 6px 2px;
+      }
+
+      .option-card {
+        display: flex;
+        position: relative;
+        align-items: center;
+        min-width: 0;
+        min-height: 70px;
+        gap: 10px;
+        padding: 9px 11px 9px 14px;
+        overflow: hidden;
+        border: 1px solid var(--card-border);
+        border-radius: 6px;
+        background-color: var(--card);
+        background-image:
+          linear-gradient(rgba(91, 78, 55, 0.025) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(91, 78, 55, 0.018) 1px, transparent 1px);
+        background-size: 5px 5px;
+        box-shadow:
+          0 2px 5px rgba(53, 44, 30, 0.16),
+          inset 0 1px 0 rgba(255, 255, 255, 0.72);
+        color: var(--text);
+        cursor: pointer;
+        text-align: left;
+        transition:
+          border-color 0.25s,
+          box-shadow 0.25s,
+          transform 0.25s;
+        animation: option-in 0.3s both;
+      }
+
+      .option-card::before {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        width: 7px;
+        content: '';
+        background: linear-gradient(180deg, var(--green) 0 33%, var(--orange) 33% 66%, var(--red) 66% 100%);
+      }
+
+      .option-card:hover,
+      .option-card:focus-visible {
+        border-color: var(--focus);
+        box-shadow:
+          0 5px 10px rgba(53, 44, 30, 0.2),
+          inset 0 1px 0 rgba(255, 255, 255, 0.72);
+        outline: none;
+        transform: translateX(6px);
+      }
+
+      .option-card:active,
+      .option-card.is-sending {
+        transform: translateX(3px);
+      }
+
+      .option-index {
+        display: grid;
+        width: 28px;
+        height: 28px;
+        flex: 0 0 28px;
+        place-items: center;
+        border: 1px solid var(--card-border);
+        border-radius: 50%;
+        color: var(--muted);
+        font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+        font-size: 10px;
+        font-weight: 800;
+      }
+
+      .option-copy {
+        display: flex;
+        min-width: 0;
+        flex: 1;
+        flex-direction: column;
+        gap: 3px;
+      }
+
+      .option-kicker {
+        color: var(--muted);
+        font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+        font-size: 9px;
+        letter-spacing: 0.12em;
+      }
+
+      .option-text {
+        min-width: 0;
+        overflow-wrap: anywhere;
+        color: var(--text);
+        font-size: 13px;
+        font-weight: 600;
+        line-height: 1.55;
+        white-space: pre-wrap;
+      }
+
+      .option-arrow {
+        flex: 0 0 auto;
+        color: var(--faint);
+        font-family: Georgia, serif;
+        font-size: 24px;
+        line-height: 1;
+      }
+
+      .options-empty {
+        padding: 14px 10px;
+        border: 1px dashed var(--card-border);
+        border-radius: 6px;
+        color: var(--muted);
+        font-size: 12px;
+        text-align: center;
+      }
+
+      @keyframes option-in {
+        from {
+          opacity: 0;
+        }
+        to {
+          opacity: 1;
+        }
+      }
+
+      @media (max-width: 480px) {
+        .options-shell {
+          padding: 6px;
+          border-radius: 12px;
+        }
+
+        .led {
+          padding: 6px 8px 5px;
+        }
+
+        .led__main {
+          gap: 6px;
+        }
+
+        .led__brand {
+          display: none;
+        }
+
+        .led__store {
+          font-size: 14px;
+        }
+
+        .ctrl-bar {
+          grid-template-columns: minmax(0, 1fr) 40px 40px;
+          gap: 6px;
+        }
+
+        .mode-key,
+        .key {
+          height: 40px;
+          min-height: 40px;
+        }
+
+        .mode-key {
+          gap: 4px;
+          padding: 0 7px;
+          font-size: 12px;
+        }
+
+        .mode-key__number {
+          width: 20px;
+          height: 20px;
+          flex-basis: 20px;
+          font-size: 8px;
+        }
+
+        .key {
+          width: 40px;
+        }
+
+        .options-grid {
+          grid-template-columns: 1fr;
+          gap: 6px;
+          padding: 0 2px 2px;
+        }
+
+        .option-card {
+          min-height: 62px;
+          padding: 8px 10px 8px 13px;
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        *,
+        *::before,
+        *::after {
+          animation-duration: 1ms !important;
+          animation-iteration-count: 1 !important;
+          transition-duration: 1ms !important;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="options-shell" id="options-shell">
+      <div class="led">
+        <div class="led__main">
+          <span class="led__dot"></span>
+          <span class="led__brand" aria-label="7-ELEVEN">
+            <span class="led__seven">7</span><span class="led__eleven">ELEVEN</span>
+          </span>
+          <span class="led__store">樱花店 · 懒人选项</span>
+          <span class="led__dot"></span>
+        </div>
+        <div class="led__sub">
+          <span>OPTIONS <b id="option-count">--</b></span>
+          <span>OPEN 24 HOURS</span>
+        </div>
+      </div>
+
+      <div class="store-stripes" aria-hidden="true">
+        <span class="store-stripes__green"></span>
+        <span class="store-stripes__orange"></span>
+        <span class="store-stripes__red"></span>
+      </div>
+
+      <div class="ctrl-bar">
+        <button class="mode-key" id="mode-btn" type="button">
+          <span class="mode-key__number" id="mode-number">01</span>
+          <span class="mode-key__label" id="mode-label">直接发送</span>
+        </button>
+        <button class="key" id="theme-btn" type="button" aria-label="切换到夜间模式">
+          <svg class="key__icon" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M20 15.3A8.5 8.5 0 0 1 8.7 4 8.5 8.5 0 1 0 20 15.3Z" />
+          </svg>
+        </button>
+        <button class="key" id="collapse-btn" type="button" aria-label="折叠选项" aria-expanded="true">
+          <svg class="key__icon key__arrow" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="m6 9 6 6 6-6" />
+          </svg>
+        </button>
+      </div>
+
+      <div class="options-body" id="options-body">
+        <div class="options-inner">
+          <div class="options-grid" id="options-grid"></div>
+          <div class="options-empty" id="options-empty" hidden>当前楼层没有可用选项。</div>
+        </div>
+      </div>
+    </div>
+
+    <div id="options-source" hidden>$1</div>
+
+    <script>
+      var mode = 'send';
+      var collapsed = false;
+      var theme = 'light';
+      var themeStorageKey = 'yjb-pos-dark';
+      var themeTransitionTimer = null;
+      var MODES = ['send', 'setinput', 'append'];
+      var MODE_META = {
+        send: { label: '直接发送', number: '01' },
+        setinput: { label: '仅输入', number: '02' },
+        append: { label: '追加输入', number: '03' },
+      };
+      var SUN_ICON =
+        '<svg class="key__icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3.5" /><path d="M12 2.5v2M12 19.5v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2.5 12h2M19.5 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4" /></svg>';
+      var MOON_ICON =
+        '<svg class="key__icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 15.3A8.5 8.5 0 0 1 8.7 4 8.5 8.5 0 1 0 20 15.3Z" /></svg>';
+
+      function esc(value) {
+        return String(value)
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;')
+          .replace(/'/g, '&#39;');
+      }
+
+      function parseOptions(source) {
+        return String(source || '')
+          .split('|')
+          .map(function (option) {
+            return option.trim();
+          })
+          .filter(Boolean);
+      }
+
+      function readOptionsSource() {
+        var source = document.getElementById('options-source');
+        var inline = source ? (source.textContent || '').trim() : '';
+        if (!inline || inline === '$1') {
+          try {
+            var messages = getChatMessages(getCurrentMessageId());
+            var raw = messages && messages[0] ? messages[0].message : '';
+            var match = raw.match(/<options>([\s\S]*?)<\/options>/i);
+            inline = match ? match[1] : '';
+          } catch (error) {
+            inline = '';
+          }
+        }
+        return inline;
+      }
+
+      function playThemeTransition() {
+        var shell = document.getElementById('options-shell');
+        if (!shell) return;
+        shell.classList.remove('is-theme-transitioning');
+        void shell.offsetWidth;
+        shell.classList.add('is-theme-transitioning');
+        if (themeTransitionTimer) clearTimeout(themeTransitionTimer);
+        themeTransitionTimer = setTimeout(function () {
+          shell.classList.remove('is-theme-transitioning');
+          themeTransitionTimer = null;
+        }, 360);
+      }
+
+      function applyTheme(next, persist, animate) {
+        theme = next === 'dark' ? 'dark' : 'light';
+        var shell = document.getElementById('options-shell');
+        var button = document.getElementById('theme-btn');
+        shell.classList.toggle('options-shell--dark', theme === 'dark');
+        document.documentElement.setAttribute('data-theme', theme);
+        button.innerHTML = theme === 'dark' ? SUN_ICON : MOON_ICON;
+        button.setAttribute('aria-label', theme === 'dark' ? '切换到白天模式' : '切换到夜间模式');
+        if (persist) {
+          try {
+            localStorage.setItem(themeStorageKey, theme === 'dark' ? 'true' : 'false');
+          } catch (error) {}
+        }
+        if (animate) playThemeTransition();
+      }
+
+      function storedTheme() {
+        try {
+          return localStorage.getItem(themeStorageKey) === 'true' ? 'dark' : 'light';
+        } catch (error) {
+          return 'light';
+        }
+      }
+
+      function toggleTheme() {
+        applyTheme(theme === 'dark' ? 'light' : 'dark', true, true);
+      }
+
+      function updateModeUi() {
+        var meta = MODE_META[mode];
+        document.getElementById('mode-label').textContent = meta.label;
+        document.getElementById('mode-number').textContent = meta.number;
+      }
+
+      function toggleMode() {
+        mode = MODES[(MODES.indexOf(mode) + 1) % MODES.length];
+        try {
+          localStorage.setItem('optionMode', mode);
+        } catch (error) {}
+        updateModeUi();
+      }
+
+      function setCollapsed(value) {
+        collapsed = Boolean(value);
+        var shell = document.getElementById('options-shell');
+        var button = document.getElementById('collapse-btn');
+        shell.classList.toggle('collapsed', collapsed);
+        button.setAttribute('aria-expanded', collapsed ? 'false' : 'true');
+        button.setAttribute('aria-label', collapsed ? '展开选项' : '折叠选项');
+      }
+
+      function sendOption(text) {
+        if (!text || !text.trim() || ['…', '...'].indexOf(text.trim()) !== -1) return;
+        if (typeof triggerSlash !== 'function') return;
+        if (mode === 'send') {
+          triggerSlash('/send ' + text + '|/trigger');
+        } else if (mode === 'setinput') {
+          triggerSlash('/setinput ' + text);
+        } else {
+          var parent$ = window.parent && window.parent.$ ? window.parent.$ : null;
+          var current = parent$ ? parent$('#send_textarea').val() || '' : '';
+          triggerSlash('/setinput ' + (current ? current + '\n' + text : text));
+        }
+      }
+
+      function renderOptions(source) {
+        var grid = document.getElementById('options-grid');
+        var empty = document.getElementById('options-empty');
+        var options = parseOptions(source);
+        document.getElementById('option-count').textContent = String(options.length).padStart(2, '0');
+        grid.innerHTML = '';
+        empty.hidden = options.length > 0;
+        for (var index = 0; index < options.length; index += 1) {
+          var number = String(index + 1).padStart(2, '0');
+          grid.insertAdjacentHTML(
+            'beforeend',
+            '<button class="option-card" type="button" data-text="' +
+              esc(options[index]) +
+              '" style="animation-delay:' +
+              index * 35 +
+              'ms"><span class="option-index">' +
+              number +
+              '</span><span class="option-copy"><span class="option-kicker">OPTION ' +
+              number +
+              '</span><span class="option-text">' +
+              esc(options[index]) +
+              '</span></span><span class="option-arrow" aria-hidden="true">›</span></button>',
+          );
+        }
+      }
+
+      function init() {
+        var savedMode = null;
+        try {
+          savedMode = localStorage.getItem('optionMode');
+        } catch (error) {}
+        if (MODES.indexOf(savedMode) !== -1) mode = savedMode;
+        applyTheme(storedTheme(), false, false);
+        updateModeUi();
+        renderOptions(readOptionsSource());
+        setCollapsed(false);
+      }
+
+      window.addEventListener('storage', function (event) {
+        if (event.key === themeStorageKey) applyTheme(event.newValue === 'true' ? 'dark' : 'light', false, true);
+      });
+
+      document.getElementById('options-grid').addEventListener('click', function (event) {
+        var item = event.target.closest('.option-card');
+        if (!item) return;
+        sendOption(item.getAttribute('data-text') || '');
+        item.classList.add('is-sending');
+        setTimeout(function () {
+          item.classList.remove('is-sending');
+        }, 300);
+        if (mode !== 'append')
+          setTimeout(function () {
+            setCollapsed(true);
+          }, 250);
+      });
+
+      document.getElementById('theme-btn').addEventListener('click', toggleTheme);
+      document.getElementById('mode-btn').addEventListener('click', toggleMode);
+      document.getElementById('collapse-btn').addEventListener('click', function () {
+        setCollapsed(!collapsed);
+      });
+
+      if (typeof $ === 'function') {
+        $(init);
+      } else {
+        setTimeout(init, 0);
+      }
+    </script>
+  </body>
+</html>
